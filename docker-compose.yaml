@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3
+  
+  subscriptions_api:
+    build: .\CryptoScan.Subscriptions.API
+    ports: 
+      - 8001:80
