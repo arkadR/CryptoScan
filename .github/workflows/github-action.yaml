@@ -30,6 +30,6 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v2
         with:
-          context: "{{ github.workspace}}/CryptoScan.Subscriptions.API"
+          context: "{{ github.workspace}}:CryptoScan.Subscriptions.API"
           push: false
       
