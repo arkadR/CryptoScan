@@ -1,12 +1,27 @@
 version: "3.9"
 
 services:
-  rabbitmq:
+  rabbit:
     image: rabbitmq:3-management
     ports:
       - 8080:15672
+      - 5671:5671
+      - 5672:5672
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
   
   subscriptions_api:
     build: .\CryptoScan.Subscriptions.API
     ports: 
       - 8001:80
+    
+  web:
+    build: .\CryptoScan.Web
+    ports: 
+      - 8002:80
+    environment:
+      - RabbitMQ__HostName=rabbit
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=user
+      - RabbitMQ__Password=password

@@ -1,22 +1,27 @@
+using System.Text;
+using System.Text.Json;
+using RabbitMQ.Client;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton(new ConnectionFactory
+{
+    HostName = builder.Configuration["RabbitMQ:HostName"], 
+    Port = Convert.ToInt32(builder.Configuration["RabbitMQ:Port"]), 
+    UserName = builder.Configuration["RabbitMQ:UserName"], 
+    Password = builder.Configuration["RabbitMQ:Password"]
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (!app.Environment.IsDevelopment())
-{
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
 
 app.MapControllerRoute(
     name: "default",
@@ -24,4 +29,28 @@ app.MapControllerRoute(
 
 app.MapFallbackToFile("index.html");
 
+app.MapPost("test", (HttpRequest request, ConnectionFactory factory) =>
+{
+    var subscription = new Subscription("test@gmail.com", "Bitcoin");
+    var message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(subscription));
+    
+    using var connection = factory.CreateConnection();
+    using var channel = connection.CreateModel();
+    channel.QueueDeclare(
+        queue: "subscriptionRequests",
+        durable: false,
+        exclusive: false,
+        autoDelete: false,
+        arguments: null);
+    channel.BasicPublish(
+        exchange: "", 
+        routingKey: "subscriptionRequests", 
+        basicProperties: null,
+        body: message);
+    return "Message queued";
+});
+
 app.Run();
+
+
+internal record Subscription(string Email, string Cryptocurrency);
