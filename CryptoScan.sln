@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoScan.Subscriptions.API", "CryptoScan.Subscriptions.API\CryptoScan.Subscriptions.API.csproj", "{CC4A7ACE-9E6F-4DFE-9F62-5A4AD59160EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoScan.Web", "CryptoScan.Web\CryptoScan.Web.csproj", "{CF540D03-B5FE-4689-A47C-E2BD764168A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{CC4A7ACE-9E6F-4DFE-9F62-5A4AD59160EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC4A7ACE-9E6F-4DFE-9F62-5A4AD59160EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC4A7ACE-9E6F-4DFE-9F62-5A4AD59160EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF540D03-B5FE-4689-A47C-E2BD764168A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF540D03-B5FE-4689-A47C-E2BD764168A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF540D03-B5FE-4689-A47C-E2BD764168A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF540D03-B5FE-4689-A47C-E2BD764168A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
