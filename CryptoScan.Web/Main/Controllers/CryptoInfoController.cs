@@ -11,6 +11,7 @@ public class CryptoInfoController : ControllerBase
 
   [Route("info/exchange")]
   [HttpGet]
+  [ResponseCache(CacheProfileName = "2h")]
   public async Task<IActionResult> GetAsync()
   {
     string response = await new HttpClient()

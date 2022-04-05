@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,15 @@ builder.Services.AddSingleton(new ConnectionFactory
     UserName = builder.Configuration["RabbitMQ:UserName"], 
     Password = builder.Configuration["RabbitMQ:Password"]
 });
+builder.Services.AddResponseCaching();
+builder.Services.AddControllers(options =>
+{
+  options.CacheProfiles.Add("2h",
+      new CacheProfile()
+      {
+        Duration = 2*60*60
+      });
+});
 
 var app = builder.Build();
 
@@ -19,6 +29,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseResponseCaching();
 
 app.MapControllerRoute(
     name: "default",
