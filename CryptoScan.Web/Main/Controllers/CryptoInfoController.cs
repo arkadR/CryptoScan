@@ -1,6 +1,7 @@
 ﻿using CryptoScan.Web.Main.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using CryptoScan.Web.Main.Extensions;
 
 namespace CryptoScan.Web.Main.Controllers;
 
@@ -12,16 +13,34 @@ public class CryptoInfoController : ControllerBase
   [Route("info/exchange")]
   [HttpGet]
   [ResponseCache(CacheProfileName = "2h")]
-  public async Task<IActionResult> GetAsync()
+  public async Task<ActionResult<ExchangeInfo>> GetAsync()
   {
     string response = await new HttpClient()
       .GetStringAsync(_getExchangeInfoUrl);
 
-    var content = JsonSerializer.Deserialize<ExchangeInfo>(response);
+    var options = new JsonSerializerOptions
+    {
+      PropertyNameCaseInsensitive = true
+    };
+
+    var content = JsonSerializer.Deserialize<ExchangeInfo>(response, options);
 
     return content == null 
       ? NotFound("Could not fetch exchange info from Binance")
-      : Ok(content);
+      : content;
+  }
+
+  [Route("info/exchange/symbols")]
+  [HttpGet]
+  [ResponseCache(CacheProfileName = "2h")]
+  public async Task<ActionResult<List<Symbol>>> GetSymbolsAsync()
+  {
+    var exchangeInfoResult = await GetAsync();
+    return exchangeInfoResult.IsSuccess()
+      ? exchangeInfoResult.Value!.Symbols
+        .Select(symbol => new Symbol(symbol.Symbol, symbol.BaseAsset, symbol.QuoteAsset))
+        .ToList()
+      : NotFound("Could not fetch symbols info from Binance");
   }
 
   //[Route("info/subscriptions")]
@@ -34,3 +53,5 @@ public class CryptoInfoController : ControllerBase
   //  return JsonSerializer.Deserialize<SubscriptionsInfo>(response);
   //}
 }
+
+public record Symbol(string symbol, string baseAsset, string quoteAsset);
