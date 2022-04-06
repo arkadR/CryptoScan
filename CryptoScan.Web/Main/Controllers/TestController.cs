@@ -9,14 +9,21 @@ namespace CryptoScan.Web.Main.Controllers;
 [ApiController]
 public class TestController : ControllerBase
 {
+  private readonly ConnectionFactory _connectionFactory;
+
+  public TestController(ConnectionFactory connectionFactory)
+  {
+    _connectionFactory = connectionFactory;
+  }
+
   [Route("test")]
   [HttpPost]
-  public static ActionResult<string> Test(HttpRequest request, ConnectionFactory factory)
+  public string Test()
   {
     var subscription = new Subscription("test@gmail.com", "Bitcoin");
     var message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(subscription));
 
-    using var connection = factory.CreateConnection();
+    using var connection = _connectionFactory.CreateConnection();
     using var channel = connection.CreateModel();
     channel.QueueDeclare(
         queue: "subscriptionRequests",
