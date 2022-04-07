@@ -30,3 +30,8 @@ services:
     build: .\CryptoScan.Messaging.Service
     ports:
       - 8004:8080
+    environment:
+      - spring_rabbitmq_host=rabbit
+      - spring_rabbitmq_port=5672
+      - spring_rabbitmq_username=user
+      - spring_rabbitmq_password=password
