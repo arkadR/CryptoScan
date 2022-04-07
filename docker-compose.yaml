@@ -25,3 +25,8 @@ services:
       - RabbitMQ__Port=5672
       - RabbitMQ__UserName=user
       - RabbitMQ__Password=password
+  
+  messaging_service:
+    build: .\CryptoScan.Messaging.Service
+    ports:
+      - 8004:8080
