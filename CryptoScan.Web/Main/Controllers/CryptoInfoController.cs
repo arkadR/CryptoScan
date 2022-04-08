@@ -1,7 +1,7 @@
 ﻿using CryptoScan.Web.Main.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 using CryptoScan.Web.Main.Extensions;
+using CryptoScan.Web.Main.Common;
 
 namespace CryptoScan.Web.Main.Controllers;
 
@@ -10,48 +10,35 @@ public class CryptoInfoController : ControllerBase
 {
   private const string _getExchangeInfoUrl = "https://api1.binance.com/api/v1/exchangeInfo";
 
-  [Route("info/exchange")]
-  [HttpGet]
+  [HttpGet, Route("info/exchange")]
   [ResponseCache(CacheProfileName = "2h")]
-  public async Task<ActionResult<ExchangeInfo>> GetAsync()
+  public async Task<ActionResult<ExchangeInfo>> GetExchangeInfoAsync()
   {
-    string response = await new HttpClient()
-      .GetStringAsync(_getExchangeInfoUrl);
-
-    var options = new JsonSerializerOptions
-    {
-      PropertyNameCaseInsensitive = true
-    };
-
-    var content = JsonSerializer.Deserialize<ExchangeInfo>(response, options);
-
-    return content == null 
-      ? NotFound("Could not fetch exchange info from Binance")
-      : content;
+    return await Http.Get<ExchangeInfo>(
+      url: _getExchangeInfoUrl, 
+      notFoundError: "Could not fetch exchange info from Binance",
+      badRequestError: "Bianance server not avilable");
   }
 
-  [Route("info/exchange/symbols")]
-  [HttpGet]
+  [HttpGet, Route("info/exchange/symbols")]
   [ResponseCache(CacheProfileName = "2h")]
   public async Task<ActionResult<List<Symbol>>> GetSymbolsAsync()
   {
-    var exchangeInfoResult = await GetAsync();
-    return exchangeInfoResult.IsSuccess()
-      ? exchangeInfoResult.Value!.Symbols
+    return (await GetExchangeInfoAsync())
+      .OnSuccess(exchangeInfo => exchangeInfo.Symbols
         .Select(symbol => new Symbol(symbol.Symbol, symbol.BaseAsset, symbol.QuoteAsset))
-        .ToList()
-      : NotFound("Could not fetch symbols info from Binance");
+        .ToList());
   }
 
-  //[Route("info/subscriptions")]
-  //[HttpGet]
-  //public async Task<IActionResult> GetSubscriptionsInfo(string subscriptionsApiUrl)
-  //{
-  //  string response = await new HttpClient()
-  //    .GetStringAsync(subscriptionsApiUrl);
-
-  //  return JsonSerializer.Deserialize<SubscriptionsInfo>(response);
-  //}
+  [HttpGet, Route("info/exchange/symbols/{quoteAsset}")]
+  [ResponseCache(CacheProfileName = "2h")]
+  public async Task<ActionResult<List<Symbol>>> GetByQuoteAssetAsync(string quoteAsset)
+  {
+    return (await GetSymbolsAsync())
+      .OnSuccess(symbols => symbols
+        .Where(symbol => symbol.quoteAsset == quoteAsset.ToUpper())
+        .ToList());
+  }
 }
 
 public record Symbol(string symbol, string baseAsset, string quoteAsset);
