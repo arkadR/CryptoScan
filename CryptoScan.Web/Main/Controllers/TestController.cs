@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using RabbitMQ.Client;
-using CryptoScan.Web.Main.Models.Queue;
+using CryptoScan.Web.Main.Models;
 
 namespace CryptoScan.Web.Main.Controllers;
 
@@ -20,7 +20,7 @@ public class TestController : ControllerBase
   [HttpPost]
   public string Test()
   {
-    var subscription = new Subscription("test@gmail.com", "Bitcoin");
+    var subscription = new Subscription("test@gmail.com", new Symbol("ETHBTC", "ETH", "BTC"), 2.5);
     var message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(subscription));
 
     using var connection = _connectionFactory.CreateConnection();

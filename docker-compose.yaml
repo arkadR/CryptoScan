@@ -25,3 +25,4 @@ services:
       - RabbitMQ__Port=5672
       - RabbitMQ__UserName=user
       - RabbitMQ__Password=password
+      - SubscriptionsApi__HostName=subscriptions_api

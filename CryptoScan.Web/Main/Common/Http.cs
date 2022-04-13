@@ -25,7 +25,7 @@ internal static class Http
     }
     catch (Exception ex)
     {
-      return new BadRequestObjectResult($"{badRequestError}, error: {ex.Message}");
+      return new BadRequestObjectResult($"{badRequestError}, \nurl: {url}, \nerror: {ex.Message}");
     }
   }
 }
