@@ -15,7 +15,6 @@ public class CryptoInfoController : ControllerBase
   {
     _getExchangeInfoUrl = configuration["Binance:ExchangeInfoUrl"]!;
     var apiHost = configuration["SubscriptionsApi:HostName"];
-    var apiPort = configuration["SubscriptionsApi:Port"];
     var apiEndpoint = configuration["SubscriptionsApi:Endpoints:Subscriptions"];
     _subscriptionsApiUrl = $"http://{apiHost}/{apiEndpoint}";
   }
