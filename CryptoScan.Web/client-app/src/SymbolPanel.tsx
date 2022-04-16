@@ -25,7 +25,7 @@ export default function SymbolPanel(props: SymbolPanelProps){
       <TableCell>{props.symbol.baseAsset}</TableCell>
       <TableCell>
         <TextField
-          id="threshold"
+          id={props.symbol.symbol}
           label="Threshold"
           type="number"
           InputLabelProps={{
