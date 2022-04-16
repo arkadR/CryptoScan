@@ -3,6 +3,14 @@ import { Symbol } from './Model/Symbol';
 import { Subscription } from './Model/Subscription';
 import {post, get, del} from './Http';
 import './App.css';
+import SymbolPanel from "./SymbolPanel";
+import { 
+  Box,
+  TableRow,
+  TableCell,
+  TextField,
+  Button
+ } from '@material-ui/core';
 
 function App() {
 
@@ -12,16 +20,37 @@ function App() {
     { symbol: "ETHBTC", baseAsset: "ETH", quoteAsset: "BTC"},
     { symbol: "LTCBTC", baseAsset: "LTC", quoteAsset: "BTC"},
     { symbol: "BNBBTC", baseAsset: "BNB", quoteAsset: "BTC"},
+    { symbol: "ETHBTC", baseAsset: "ETH", quoteAsset: "BTC"},
+    { symbol: "LTCBTC", baseAsset: "LTC", quoteAsset: "BTC"},
+    { symbol: "BNBBTC", baseAsset: "BNB", quoteAsset: "BTC"},
+    { symbol: "ETHBTC", baseAsset: "ETH", quoteAsset: "BTC"},
+    { symbol: "LTCBTC", baseAsset: "LTC", quoteAsset: "BTC"},
+    { symbol: "BNBBTC", baseAsset: "BNB", quoteAsset: "BTC"},
   ]
   
-  let [successText, setSuccessText] = useState("");
+  let [snackbarText, setSnackbarText] = useState("");
+  let [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   let [symbols, setSymbols] = useState<Symbol[]>();
-  let [symbol, setSymbol] = useState<Symbol>();
+  let [subscriptions, setSubscriptions] = useState<Subscription[]>();
+  let [isEmailSet, setIsEmailSet] = useState(false);
+  let [email, setEmail] = useState("")
 
-  let subscribe = async (subscription: Subscription) => {
+  let showSnackbar = (message: string) => {
+    setSnackbarText(message);
+    setIsSnackbarOpen(true);
+  }
+
+  let confirmEmail = () => {
+    setIsEmailSet(true);
+    getAvilableSymbols()
+    // getSubscriptions()
+  }
+
+  let subscribe = async (symbol: Symbol, threshold: number) => {
+    let subscription = {email: email, symbol: symbol, threshold: threshold} as Subscription;
     let response = await post("subscribe", JSON.stringify(subscription));
     let text = await response.text();
-    setSuccessText(text);
+    showSnackbar(text);
   }
 
   // let getAvilableSymbols = async () => {
@@ -34,31 +63,41 @@ function App() {
     setSymbols(testBinanceSymbols);
   }
 
-  let selectionChanged = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    let selectedSymbol = symbols?.find(s => s.symbol === event.target.value)
-    setSymbol(selectedSymbol);
-  };
-
-  // 1. after refresh only field to provide email
-  // 2. load symbols (by quote asset (distinct))
-  // 3. load subscriptions
-  // 4. list all (at the top subscriptions, below symbols)
-  // 4a. subscriptions have infos about, well, subscription (without email) + buttons (delete, patch)
-  // 4b. symbols have symbols info (base asset may be sufficient) + threshold field + buttons (subscribe)
-    
   return (
     <div className="App">
       <header className="App-header">
-        {/* <button onClick={testPost}> Send message </button>
-        <p> {successText} </p> */}
-        <p>Get data:</p>
-        <button onClick={getAvilableSymbols}> Get symbols </button>        
-        <p>Selected symbol: {symbol?.symbol}</p>
-        <select value={symbol?.symbol} onChange={selectionChanged}>
-          {symbols?.map((symbol) => (
-            <option value={symbol.symbol}>{symbol.symbol}</option>
-          ))}
-        </select>
+        <img src={require('./logo.png')} alt="logo" className="App-logo" />
+        <Box height="25px"/>
+        <img src={require('./logo-name.png')} alt="logo" />
+        {isEmailSet
+          ? <>
+              {/* {subscriptions?.map((subscription) => (
+                <SubscriptionPanel subscription={subscription}/>
+              ))} */}
+              {symbols?.map((symbol) => (
+                <SymbolPanel 
+                  symbol={symbol}
+                  subscribeAction={subscribe}/>
+              ))}
+            </>
+          : <TableRow>
+              <TableCell>Email: </TableCell>
+              <TableCell>
+                <TextField
+                  id="email"
+                  type="email"
+                  variant="outlined"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                </TableCell>
+                <TableCell>
+                  <Button 
+                    disabled={email.length <= 0} // email validation?
+                    onClick={confirmEmail}>
+                    Confirm email
+                  </Button>
+                </TableCell>
+            </TableRow>  }
       </header>
     </div>
   );
