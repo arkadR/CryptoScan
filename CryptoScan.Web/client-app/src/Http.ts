@@ -7,7 +7,11 @@ export async function post(apiEndpoint: string, body: string | null = null) {
 }
 
 export async function del(apiEndpoint: string, body: string | null = null) {
-    return request(apiEndpoint, "DELETE", body);
+  return request(apiEndpoint, "DELETE", body);
+}
+
+export async function patch(apiEndpoint: string, body: string | null = null) {
+  return request(apiEndpoint, "PATCH", body);
 }
 
 async function request(apiEndpoint: string, method: string, body: string | null = null) {

@@ -16,7 +16,7 @@ public class SubscriptionsController : ControllerBase
     _connectionFactory = connectionFactory;
   }
 
-  [HttpPost, Route("subscribe")]
+  [HttpPost, Route("subscriptions/subscribe")]
   public string Subscribe([FromBody] Subscription subscription) //Actionresult?
   {
     var message = JsonSerializer.Serialize(subscription);
@@ -26,7 +26,17 @@ public class SubscriptionsController : ControllerBase
     return $"Subscribed to {subscription.symbol.symbol} with a threshold of {subscription.threshold}";
   }
 
-  [HttpDelete, Route("subscribe")]
+  [HttpPatch, Route("subscriptions/update")]
+  public string Update([FromBody] Subscription subscription)
+  {
+    var message = JsonSerializer.Serialize(subscription);
+
+    PublishQueueMessage(message, "update");
+
+    return $"Updated threshold for {subscription.symbol.symbol} with a value of {subscription.threshold}";
+  }
+
+  [HttpDelete, Route("subscriptions/unsubscribe")]
   public string Unsubscribe([FromBody] Subscription subscription)
   {
     var message = JsonSerializer.Serialize(subscription);
