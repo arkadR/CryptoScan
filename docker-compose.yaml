@@ -35,3 +35,4 @@ services:
       - spring_rabbitmq_port=5672
       - spring_rabbitmq_username=user
       - spring_rabbitmq_password=password
+      - cryptopanic_token=${CRYPTOPANIC_TOKEN}
