@@ -1,12 +1,12 @@
 namespace CryptoScan.Web.Models;
 
-public partial class RateLimits
+public class RateLimits
 {
-  public string RateLimitType { get; set; }
+  public string RateLimitType { get; init; }
 
-  public string Interval { get; set; }
+  public string Interval { get; init; }
 
-  public int? IntervalNum { get; set; }
+  public int? IntervalNum { get; init; }
 
-  public int? Limit { get; set; }
+  public int? Limit { get; init; }
 }

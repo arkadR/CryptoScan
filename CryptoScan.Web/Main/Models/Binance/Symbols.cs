@@ -1,38 +1,38 @@
 ﻿namespace CryptoScan.Web.Models;
 
-public partial class Symbols
+public class Symbols
 {
-  public string Symbol { get; set; }
+  public string Symbol { get; init; }
 
-  public string Status { get; set; }
+  public string Status { get; init; }
 
-  public string BaseAsset { get; set; }
+  public string BaseAsset { get; init; }
 
-  public int? BaseAssetPrecision { get; set; }
+  public int? BaseAssetPrecision { get; init; }
 
-  public string QuoteAsset { get; set; }
+  public string QuoteAsset { get; init; }
 
-  public int? QuoteAssetPrecision { get; set; }
+  public int? QuoteAssetPrecision { get; init; }
 
-  public int? BaseCommissionPrecision { get; set; }
+  public int? BaseCommissionPrecision { get; init; }
 
-  public int? QuoteCommissionPrecision { get; set; }
+  public int? QuoteCommissionPrecision { get; init; }
 
-  public List<string> OrderTypes { get; set; }
+  public List<string> OrderTypes { get; init; }
 
-  public bool? IcebergAllowed { get; set; }
+  public bool? IcebergAllowed { get; init; }
 
-  public bool? OcoAllowed { get; set; }
+  public bool? OcoAllowed { get; init; }
 
-  public bool? QuoteOrderQtyMarketAllowed { get; set; }
+  public bool? QuoteOrderQtyMarketAllowed { get; init; }
 
-  public bool? AllowTrailingStop { get; set; }
+  public bool? AllowTrailingStop { get; init; }
 
-  public bool? IsSpotTradingAllowed { get; set; }
+  public bool? IsSpotTradingAllowed { get; init; }
 
-  public bool? IsMarginTradingAllowed { get; set; }
+  public bool? IsMarginTradingAllowed { get; init; }
 
-  public List<Filters> Filters { get; set; }
+  public List<Filters> Filters { get; init; }
 
-  public List<string> Permissions { get; set; }
+  public List<string> Permissions { get; init; }
 }

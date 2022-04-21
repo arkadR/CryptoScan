@@ -1,3 +1,4 @@
+using CryptoScan.Web.Main.Common;
 using Microsoft.AspNetCore.Mvc;
 using RabbitMQ.Client;
 
@@ -10,7 +11,9 @@ builder.Services.AddSingleton(new ConnectionFactory
     Port = Convert.ToInt32(builder.Configuration["RabbitMQ:Port"]), 
     UserName = builder.Configuration["RabbitMQ:UserName"], 
     Password = builder.Configuration["RabbitMQ:Password"]
-});
+}); 
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IHttp, Http>();
 builder.Services.AddResponseCaching();
 builder.Services.AddControllers(options =>
 {

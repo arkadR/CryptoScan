@@ -11,8 +11,11 @@ public class CryptoInfoController : ControllerBase
   private readonly string _getExchangeInfoUrl;
   private readonly string _subscriptionsApiUrl;
 
-  public CryptoInfoController(IConfiguration configuration)
+  private readonly IHttp _http;
+
+  public CryptoInfoController(IConfiguration configuration, IHttp http)
   {
+    _http = http;
     _getExchangeInfoUrl = configuration["Binance:ExchangeInfoUrl"]!;
     var apiHost = configuration["SubscriptionsApi:HostName"];
     var apiEndpoint = configuration["SubscriptionsApi:Endpoints:Subscriptions"];
@@ -23,7 +26,7 @@ public class CryptoInfoController : ControllerBase
   [ResponseCache(CacheProfileName = "2h")]
   public async Task<ActionResult<ExchangeInfo>> GetExchangeInfoAsync()
   {
-    return await Http.Get<ExchangeInfo>(
+    return await _http.Get<ExchangeInfo>(
       url: _getExchangeInfoUrl, 
       notFoundError: "Could not fetch exchange info from Binance",
       badRequestError: "Bianance server not avilable");
@@ -57,4 +60,5 @@ public class CryptoInfoController : ControllerBase
      notFoundError: "Could not fetch exchange info from subscriptions api",
      badRequestError: "Subscriptions api server not avilable");
   }
+}
 }
