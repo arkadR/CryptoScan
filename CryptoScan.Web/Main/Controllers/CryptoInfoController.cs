@@ -10,11 +10,18 @@ public class CryptoInfoController : ControllerBase
 {
   private const string _getExchangeInfoUrl = "https://api1.binance.com/api/v1/exchangeInfo";
 
+  private readonly IHttp _http;
+
+  public CryptoInfoController(IHttp http)
+  {
+    _http = http;
+  }
+
   [HttpGet, Route("info/exchange")]
   [ResponseCache(CacheProfileName = "2h")]
   public async Task<ActionResult<ExchangeInfo>> GetExchangeInfoAsync()
   {
-    return await Http.Get<ExchangeInfo>(
+    return await _http.Get<ExchangeInfo>(
       url: _getExchangeInfoUrl, 
       notFoundError: "Could not fetch exchange info from Binance",
       badRequestError: "Bianance server not avilable");

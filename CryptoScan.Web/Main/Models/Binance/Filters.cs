@@ -1,12 +1,12 @@
 ﻿namespace CryptoScan.Web.Models;
 
-public partial class Filters
+public class Filters
 {
-  public string FilterType { get; set; }
+  public string FilterType { get; init; }
 
-  public string MinPrice { get; set; }
+  public string MinPrice { get; init; }
 
-  public string MaxPrice { get; set; }
+  public string MaxPrice { get; init; }
 
-  public string TickSize { get; set; }
+  public string TickSize { get; init; }
 }

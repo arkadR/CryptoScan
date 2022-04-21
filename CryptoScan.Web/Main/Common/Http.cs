@@ -3,14 +3,21 @@ using System.Text.Json;
 
 namespace CryptoScan.Web.Main.Common;
 
-internal static class Http
+internal class Http : IHttp
 {
-  public static async Task<ActionResult<T>> Get<T>(string url, string? notFoundError = null, string? badRequestError = null)
+  private readonly IHttpClientFactory _httpClientFactory;
+
+  public Http(IHttpClientFactory httpClientFactory)
+  {
+    _httpClientFactory = httpClientFactory;
+  }
+
+  public async Task<ActionResult<T>> Get<T>(string url, string? notFoundError = null, string? badRequestError = null)
   {
     try
     {
-      string response = await new HttpClient()
-      .GetStringAsync(url);
+      string response = await _httpClientFactory.CreateClient()
+        .GetStringAsync(url);
 
       var options = new JsonSerializerOptions
       {

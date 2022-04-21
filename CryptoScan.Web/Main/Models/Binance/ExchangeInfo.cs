@@ -2,16 +2,16 @@
 
 namespace CryptoScan.Web.Main.Models;
 
-public partial class ExchangeInfo
+public class ExchangeInfo
 {
-  public string Timezone { get; set; }
+  public string Timezone { get; init; }
 
-  public long? ServerTime { get; set; }
+  public long? ServerTime { get; init; }
 
-  public List<RateLimits> RateLimits { get; set; }
+  public List<RateLimits> RateLimits { get; init; }
 
-  public List<Object> ExchangeFilters { get; set; }
+  public List<Object> ExchangeFilters { get; init; }
 
-  public List<Symbols> Symbols { get; set; }
+  public List<Symbols> Symbols { get; init; }
 }
 
