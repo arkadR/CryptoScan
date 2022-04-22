@@ -25,3 +25,18 @@ services:
       - RabbitMQ__Port=5672
       - RabbitMQ__UserName=user
       - RabbitMQ__Password=password
+  
+  messaging_service:
+    build: .\CryptoScan.Messaging.Service
+    ports:
+      - 8004:8080
+    environment:
+      - spring_rabbitmq_host=rabbit
+      - spring_rabbitmq_port=5672
+      - spring_rabbitmq_username=user
+      - spring_rabbitmq_password=password
+      - cryptopanic_token=${CRYPTOPANIC_TOKEN}
+      - spring_mail_host=${MAIL_HOST}
+      - spring_mail_port=${MAIL_PORT}
+      - spring_mail_username=${MAIL_USERNAME}
+      - spring_mail_password=${MAIL_PASSWORD}
