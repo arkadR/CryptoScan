@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en-us">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>The latest news</title>
+  </head>
+  <body>
+    <b th:text="${'The latest news on ' + currency + ' cryptocurrency'}"></b>
+    <ul>
+      <li th:each="news: ${news}">
+        <a th:href="${news.url}" th:text="${news.title}"></a>
+      </li>
+    </ul>
+  </body>
+</html>
