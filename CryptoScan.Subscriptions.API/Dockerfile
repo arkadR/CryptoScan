@@ -5,8 +5,9 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY . .
+COPY ["CryptoScan.Subscriptions.API.csproj", "."]
 RUN dotnet restore "CryptoScan.Subscriptions.API.csproj"
+COPY . .
 RUN dotnet build "CryptoScan.Subscriptions.API.csproj" -c Release -o /app/build
 
 FROM build AS publish

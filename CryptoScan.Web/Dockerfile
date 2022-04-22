@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS restore
 
 # Install Node.js
 RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
@@ -11,6 +11,15 @@ RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
         nodejs \
     && rm -rf /var/lib/apt/lists/*
 
+WORKDIR /src
+COPY ["CryptoScan.Web.csproj", "."]
+RUN dotnet restore "CryptoScan.Web.csproj"
+COPY ["client-app/package.json", "client-app/package.json"]
+COPY ["client-app/package-lock.json", "client-app/package-lock.json"]
+WORKDIR /src/client-app
+RUN npm install
+
+FROM restore AS build
 WORKDIR /src
 COPY . .
 RUN dotnet build "CryptoScan.Web.csproj" -c Release -o /app/build
