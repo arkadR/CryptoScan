@@ -2,6 +2,7 @@ package com.cryptoscan.messaging.queue;
 
 import com.cryptoscan.messaging.model.message.CryptoChangesMessage;
 import com.cryptoscan.messaging.model.news.News;
+import com.cryptoscan.messaging.service.MailService;
 import com.cryptoscan.messaging.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -15,10 +16,12 @@ public class QueueConsumer {
 
     private final NewsService newsService;
 
+    private final MailService mailService;
+
     @RabbitListener(queues = "cryptoChanges")
     public void receive(CryptoChangesMessage message) {
         List<News> news = newsService.getNewsForCurrency(message.getCurrency());
-        news.stream().map(News::getTitle).forEach(System.out::println);
+        mailService.sendNews(message.getEmail(), message.getCurrency(), news);
     }
 
 }

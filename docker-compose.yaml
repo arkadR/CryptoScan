@@ -36,3 +36,7 @@ services:
       - spring_rabbitmq_username=user
       - spring_rabbitmq_password=password
       - cryptopanic_token=${CRYPTOPANIC_TOKEN}
+      - spring_mail_host=${MAIL_HOST}
+      - spring_mail_port=${MAIL_PORT}
+      - spring_mail_username=${MAIL_USERNAME}
+      - spring_mail_password=${MAIL_PASSWORD}
