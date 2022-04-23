@@ -52,7 +52,7 @@ public class SubscriptionsModule : ICarterModule
   private async Task<IResult> AddSubscription(Subscription subscription)
   {
     var createdSubscription = await _subscriptionsService.CreateSubscription(subscription);
-    return Results.Created($"/subscriptions/{createdSubscription.Value.SubscriptionId}", createdSubscription);
+    return Results.Created($"/subscriptions/{createdSubscription.Value.SubscriptionId}", createdSubscription.Value);
   }
 
   private async Task<IResult> DeleteSubscription(string id)
