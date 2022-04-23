@@ -18,6 +18,7 @@ services:
     
   web:
     build: .\CryptoScan.Web
+    hostname: webapp
     ports: 
       - 8002:80
     environment:
@@ -26,17 +27,36 @@ services:
       - RabbitMQ__UserName=user
       - RabbitMQ__Password=password
   
-  messaging_service:
-    build: .\CryptoScan.Messaging.Service
+  # messaging_service:
+  #   build: .\CryptoScan.Messaging.Service
+  #   ports:
+  #     - 8004:8080
+  #   environment:
+  #     - spring_rabbitmq_host=rabbit
+  #     - spring_rabbitmq_port=5672
+  #     - spring_rabbitmq_username=user
+  #     - spring_rabbitmq_password=password
+  #     - cryptopanic_token=${CRYPTOPANIC_TOKEN}
+  #     - spring_mail_host=${MAIL_HOST}
+  #     - spring_mail_port=${MAIL_PORT}
+  #     - spring_mail_username=${MAIL_USERNAME}
+  #     - spring_mail_password=${MAIL_PASSWORD}
+
+  mongo:
+    image: mongo
+    restart: always
     ports:
-      - 8004:8080
+      - 27017:27017
     environment:
-      - spring_rabbitmq_host=rabbit
-      - spring_rabbitmq_port=5672
-      - spring_rabbitmq_username=user
-      - spring_rabbitmq_password=password
-      - cryptopanic_token=${CRYPTOPANIC_TOKEN}
-      - spring_mail_host=${MAIL_HOST}
-      - spring_mail_port=${MAIL_PORT}
-      - spring_mail_username=${MAIL_USERNAME}
-      - spring_mail_password=${MAIL_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: user
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://user:password@mongo:27017/
