@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import { Symbol } from './Model/Symbol';
+import {CryptocurrencySymbol } from './Model/Symbol';
 import {
   TextField,
   Button,
@@ -8,11 +8,11 @@ import {
 } from "@material-ui/core";
 
 type SymbolPanelProps ={
-  symbol: Symbol;
-  subscribeAction: (symbol: Symbol, threshold: number) => void;
+  symbol: CryptocurrencySymbol;
+  subscribeAction: (symbol: CryptocurrencySymbol, threshold: number) => void;
 }
 
-export default function SymbolPanel(props: SymbolPanelProps){
+export default function SymbolPanel(props: SymbolPanelProps) {
   
   let [threshold, setThreshold] = useState<number | null>(null)
 

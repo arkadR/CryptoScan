@@ -1,7 +1,7 @@
-import { Symbol } from "./Symbol";
+import {CryptocurrencySymbol } from "./Symbol";
 
 export type Subscription = {
-  email: string;
-  symbol: Symbol;
+  userId: string;
+  symbol: CryptocurrencySymbol;
   threshold: number;
 };

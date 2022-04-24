@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import { Symbol } from './Model/Symbol';
+import { CryptocurrencySymbol } from './Model/Symbol';
 import { Subscription } from './Model/Subscription';
 import {post, get, del, patch} from './Http';
 import './App.css';
@@ -17,20 +17,20 @@ import {
 
   const quoteAsset : string = "EUR";
   
-  let [symbols, setSymbols] = useState<Symbol[]>();
+  let [symbols, setSymbols] = useState<CryptocurrencySymbol[]>();
   let [subscriptions, setSubscriptions] = useState<Subscription[]>();
   let [isEmailSet, setIsEmailSet] = useState(false);
   let [email, setEmail] = useState("")
 
   let confirmEmail = () => {
     setIsEmailSet(true);
-    getAvilableSymbols()
-    getSubscriptions()
+    getAvailableSymbols();
+    getSubscriptions();
   }
 
-  let getAvilableSymbols = async () => {
+  let getAvailableSymbols = async () => {
     let response = await get("info/exchange/symbols/" + quoteAsset);
-    let symbols = (await response.json()) as Symbol[];
+    let symbols = (await response.json()) as CryptocurrencySymbol[];
     setSymbols(symbols);
   }
 
@@ -40,15 +40,15 @@ import {
     setSubscriptions(subscriptions);
   }
 
-  let subscribe = async (symbol: Symbol, threshold: number) => {
-    let subscription = {email: email, symbol: symbol, threshold: threshold} as Subscription;
+  let subscribe = async (symbol: CryptocurrencySymbol, threshold: number) => {
+    let subscription = { userId: email, symbol: symbol, threshold: threshold} as Subscription;
     await post("subscriptions/subscribe", JSON.stringify(subscription));
     let newSubscriptions = [...subscriptions as Subscription[], subscription];
     setSubscriptions(newSubscriptions);
   }
 
   let update = async (subscription: Subscription, threshold: number) => {
-    let newSubscription = {email: subscription.email, symbol: subscription.symbol, threshold: threshold} as Subscription;
+    let newSubscription = { userId: subscription.userId, symbol: subscription.symbol, threshold: threshold} as Subscription;
     await patch("subscriptions/update", JSON.stringify(newSubscription));
     subscriptions?.push(newSubscription);
     removeSubscription(subscription);
