@@ -18,3 +18,4 @@ app.MapCarter();
 app.UseSwaggerUI();
 
 app.Run();
+app.Run();
