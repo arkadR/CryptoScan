@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CryptoScan.Constants" Version="1.0.0" />
+    <PackageReference Condition="'$(Configuration)' == 'Release'" Include="CryptoScan.Constants" Version="1.0.0" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.4" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <ProjectReference Include="..\CryptoScan.Constants\CryptoScan.Constants.csproj" />
   </ItemGroup>
 
