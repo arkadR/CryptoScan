@@ -48,7 +48,7 @@ public class SubscriptionsService
     var filter = Builders<Subscription>.Filter
       .Eq(p => p.SubscriptionId, id);
     var update = Builders<Subscription>.Update
-      .Set(p => p.CryptocurrencySymbol, updateProperties.CryptocurrencySymbol)
+      .Set(p => p.Symbol, updateProperties.Symbol)
       .Set(p => p.Threshold, updateProperties.Threshold);
 
     await _subscriptionsCollection.UpdateOneAsync(

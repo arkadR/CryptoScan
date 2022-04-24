@@ -13,7 +13,7 @@ public record Subscription
 
   public string UserId { get; init; }
 
-  public string CryptocurrencySymbol { get; init; }
+  public CryptocurrencySymbol Symbol { get; init; }
 
   public double Threshold { get; init; }
 }
