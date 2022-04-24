@@ -1,5 +1,5 @@
 ﻿namespace CryptoScan.Web.Main.Models;
 
-public record Subscription(string email, Symbol symbol, double threshold);
-
-public record Symbol(string symbol, string baseAsset, string quoteAsset);
+public record Subscription(string UserId, CryptocurrencySymbol Symbol, double Threshold);
+    
+public record CryptocurrencySymbol(string Symbol, string BaseAsset, string QuoteAsset);

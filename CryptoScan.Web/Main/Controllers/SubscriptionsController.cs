@@ -21,9 +21,9 @@ public class SubscriptionsController : ControllerBase
   {
     var message = JsonSerializer.Serialize(subscription);
 
-    PublishQueueMessage(message, "subscribe");
+    PublishQueueMessage(message, Constants.Queues.SubscriptionCreate);
 
-    return $"Subscribed to {subscription.symbol.symbol} with a threshold of {subscription.threshold}";
+    return $"Subscribed to {subscription.Symbol.Symbol} with a threshold of {subscription.Threshold}";
   }
 
   [HttpPatch, Route("subscriptions/update")]
@@ -31,9 +31,9 @@ public class SubscriptionsController : ControllerBase
   {
     var message = JsonSerializer.Serialize(subscription);
 
-    PublishQueueMessage(message, "update");
+    PublishQueueMessage(message, Constants.Queues.SubscriptionUpdate);
 
-    return $"Updated threshold for {subscription.symbol.symbol} with a value of {subscription.threshold}";
+    return $"Updated threshold for {subscription.Symbol.Symbol} with a value of {subscription.Threshold}";
   }
 
   [HttpDelete, Route("subscriptions/unsubscribe")]
@@ -41,25 +41,28 @@ public class SubscriptionsController : ControllerBase
   {
     var message = JsonSerializer.Serialize(subscription);
 
-    PublishQueueMessage(message, "unsubscribe");
+    PublishQueueMessage(message, Constants.Queues.SubscriptionDelete);
 
-    return $"Unsubscribed from {subscription.symbol.symbol}";
+    return $"Unsubscribed from {subscription.Symbol.Symbol}";
   }
 
   private void PublishQueueMessage(string message, string queueName)
   {
     using var connection = _connectionFactory.CreateConnection();
     using var channel = connection.CreateModel();
+    channel.ExchangeDeclare(exchange: Constants.Exchanges.SubscriptionManagementExchange, ExchangeType.Fanout);
     channel.QueueDeclare(
         queue: queueName,
         durable: false,
         exclusive: false,
         autoDelete: false,
         arguments: null);
+    channel.QueueBind(queueName, Constants.Exchanges.SubscriptionManagementExchange, "");
     channel.BasicPublish(
-        exchange: "",
+        exchange: Constants.Exchanges.SubscriptionManagementExchange,
         routingKey: queueName,
         basicProperties: null,
         body: Encoding.UTF8.GetBytes(message));
+    channel.Close();
   }
 }

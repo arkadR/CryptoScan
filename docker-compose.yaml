@@ -21,7 +21,12 @@ services:
       - SubscriptionsDatabase__SubscriptionsCollectionName=Subscriptions
     
   web:
-    build: .\CryptoScan.Web
+    env_file: .env
+    build: 
+      context: .\CryptoScan.Web
+      args:
+        - GITHUB_TOKEN=${GITHUB_TOKEN}
+        - GITHUB_USERNAME=${GITHUB_USERNAME}
     hostname: webapp
     ports: 
       - 8002:80
@@ -52,6 +57,7 @@ services:
   #     context: .\CryptoScan.Subscriptions.Worker
   #     args:
   #       - GITHUB_TOKEN=${GITHUB_TOKEN}
+  #       - GITHUB_USERNAME=${GITHUB_USERNAME}
   #   environment:
   #     - RabbitMQ__HostName=rabbit
   #     - RabbitMQ__Port=5672
