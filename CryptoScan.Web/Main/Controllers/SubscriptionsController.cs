@@ -50,14 +50,14 @@ public class SubscriptionsController : ControllerBase
   {
     using var connection = _connectionFactory.CreateConnection();
     using var channel = connection.CreateModel();
-    channel.ExchangeDeclare(exchange: Constants.Exchanges.SubscriptionManagementExchange, ExchangeType.Fanout);
+    channel.ExchangeDeclare(exchange: Constants.Exchanges.SubscriptionManagementExchange, ExchangeType.Direct);
     channel.QueueDeclare(
         queue: queueName,
         durable: false,
         exclusive: false,
         autoDelete: false,
         arguments: null);
-    channel.QueueBind(queueName, Constants.Exchanges.SubscriptionManagementExchange, "");
+    channel.QueueBind(queueName, Constants.Exchanges.SubscriptionManagementExchange, queueName);
     channel.BasicPublish(
         exchange: Constants.Exchanges.SubscriptionManagementExchange,
         routingKey: queueName,

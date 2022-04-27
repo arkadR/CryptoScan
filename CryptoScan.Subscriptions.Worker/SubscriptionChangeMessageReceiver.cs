@@ -10,47 +10,97 @@ namespace CryptoScan.Subscriptions.Worker;
 public class SubscriptionChangeMessageReceiver : BackgroundService
 {
   private readonly IConnection _connection;  
-  private readonly IModel _channel; 
+  private readonly IModel _channel;
+  private readonly ISubscriptionService _subscriptionService;
 
-  public SubscriptionChangeMessageReceiver(IConnectionFactory connectionFactory)
+  public SubscriptionChangeMessageReceiver(IConnectionFactory connectionFactory, ISubscriptionService subscriptionService)
   {
+    _subscriptionService = subscriptionService;
     _connection = connectionFactory.CreateConnection();
+    DeclareExchangeAndQueues(_connection);
+
     _channel = _connection.CreateModel();
-    _channel.ExchangeDeclare(exchange: Exchanges.SubscriptionManagementExchange, ExchangeType.Fanout);
-    _channel.QueueDeclare(
-      queue: Queues.SubscriptionCreate,
-      durable: false,
-      exclusive: false,
-      autoDelete: false,
-      arguments: null);
-        
-    _channel.QueueBind(queue: Queues.SubscriptionCreate,
-      exchange: Exchanges.SubscriptionManagementExchange,
-      routingKey: Queues.SubscriptionCreate);
+  }
+
+  private void DeclareExchangeAndQueues(IConnection connection)
+  {
+    using var channel = connection.CreateModel();
+    channel.ExchangeDeclare(exchange: Exchanges.SubscriptionManagementExchange, ExchangeType.Direct);
+
+    foreach (var queueName in new List<string> {
+                 Queues.SubscriptionCreate, 
+                 Queues.SubscriptionUpdate, 
+                 Queues.SubscriptionDelete})
+    {
+      channel.QueueDeclare(
+        queue: queueName,
+        durable: false,
+        exclusive: false,
+        autoDelete: false,
+        arguments: null);
+    }
   }
 
   protected override Task ExecuteAsync(CancellationToken stoppingToken)
   {
     stoppingToken.ThrowIfCancellationRequested();
 
-    var consumer = new EventingBasicConsumer(_channel);
-    consumer.Received += (model, ea) =>
-    {
-      var body = ea.Body.ToArray();
-      var message = Encoding.UTF8.GetString(body);
-      var data = JsonSerializer.Deserialize<Subscription>(message);
-      onMessageReceived(data);
-    };
-    _channel.BasicConsume(queue: Queues.SubscriptionCreate,
-      autoAck: true,
-      consumer: consumer);
+    var subscriptionCreateConsumer = new EventingBasicConsumer(_channel);
+    subscriptionCreateConsumer.Received += 
+      async (_, ea) => 
+        await OnSubscriptionCreateRequestReceived(DeserializeSubscription(ea), ea.DeliveryTag);
+    
+    var subscriptionUpdateConsumer = new EventingBasicConsumer(_channel);
+    subscriptionUpdateConsumer.Received += 
+      async (_, ea) => 
+        await OnSubscriptionUpdateRequestReceived(DeserializeSubscription(ea), ea.DeliveryTag);
+    
+    var subscriptionDeleteConsumer = new EventingBasicConsumer(_channel);
+    subscriptionDeleteConsumer.Received += 
+      async (_, ea) => 
+        await OnSubscriptionDeleteRequestReceived(DeserializeSubscription(ea), ea.DeliveryTag);
+    
+    _channel.BasicConsume(Queues.SubscriptionCreate, false, subscriptionCreateConsumer);
+    _channel.BasicConsume(Queues.SubscriptionUpdate, false, subscriptionUpdateConsumer);
+    _channel.BasicConsume(Queues.SubscriptionDelete, false, subscriptionDeleteConsumer);
 
     return Task.CompletedTask;
   }
 
-  private void onMessageReceived(Subscription message)
+  private async Task OnSubscriptionCreateRequestReceived(Subscription message, ulong deliveryTag)
   {
-    Console.WriteLine(message);
+    var success = await _subscriptionService.Create(message);
+    if (success)
+      _channel.BasicAck(deliveryTag, false);
+    else 
+      _channel.BasicNack(deliveryTag, false, false);
+  }
+  
+  private async Task OnSubscriptionUpdateRequestReceived(Subscription message, ulong deliveryTag)
+  {
+    var success = await _subscriptionService.Update(message);
+    if (success)
+      _channel.BasicAck(deliveryTag, false);
+    else 
+      _channel.BasicNack(deliveryTag, false, false);
+  }
+  
+  private async Task OnSubscriptionDeleteRequestReceived(Subscription message, ulong deliveryTag)
+  {
+    var success = await _subscriptionService.Delete(message);
+    if (success)
+      _channel.BasicAck(deliveryTag, false);
+    else 
+      _channel.BasicNack(deliveryTag, false, false);
+  }
+
+  private static Subscription DeserializeSubscription(BasicDeliverEventArgs ea)
+  {
+    return JsonSerializer.Deserialize<Subscription>(
+      Encoding.UTF8.GetString(
+        ea.Body.ToArray()
+      )
+    )!;
   }
 
   public override void Dispose()
