@@ -37,32 +37,33 @@ services:
       - RabbitMQ__Password=password
       - SubscriptionsApi__HostName=subscriptions_api
   
-  # messaging_service:
-  #   build: .\CryptoScan.Messaging.Service
-  #   ports:
-  #     - 8004:8080
-  #   environment:
-  #     - spring_rabbitmq_host=rabbit
-  #     - spring_rabbitmq_port=5672
-  #     - spring_rabbitmq_username=user
-  #     - spring_rabbitmq_password=password
-  #     - cryptopanic_token=${CRYPTOPANIC_TOKEN}
-  #     - spring_mail_host=${MAIL_HOST}
-  #     - spring_mail_port=${MAIL_PORT}
-  #     - spring_mail_username=${MAIL_USERNAME}
-  #     - spring_mail_password=${MAIL_PASSWORD}
+  messaging_service:
+    build: .\CryptoScan.Messaging.Service
+    ports:
+      - 8004:8080
+    environment:
+      - spring_rabbitmq_host=rabbit
+      - spring_rabbitmq_port=5672
+      - spring_rabbitmq_username=user
+      - spring_rabbitmq_password=password
+      - cryptopanic_token=${CRYPTOPANIC_TOKEN}
+      - spring_mail_host=${MAIL_HOST}
+      - spring_mail_port=${MAIL_PORT}
+      - spring_mail_username=${MAIL_USERNAME}
+      - spring_mail_password=${MAIL_PASSWORD}
       
-  # subscriptions_service:
-  #   build: 
-  #     context: .\CryptoScan.Subscriptions.Worker
-  #     args:
-  #       - GITHUB_TOKEN=${GITHUB_TOKEN}
-  #       - GITHUB_USERNAME=${GITHUB_USERNAME}
-  #   environment:
-  #     - RabbitMQ__HostName=rabbit
-  #     - RabbitMQ__Port=5672
-  #     - RabbitMQ__UserName=user
-  #     - RabbitMQ__Password=password
+  subscriptions_service:
+    build: 
+      context: .\CryptoScan.Subscriptions.Worker
+      args:
+        - GITHUB_TOKEN=${GITHUB_TOKEN}
+        - GITHUB_USERNAME=${GITHUB_USERNAME}
+    environment:
+      - RabbitMQ__HostName=rabbit
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=user
+      - RabbitMQ__Password=password
+      - SubscriptionsApi__Url=subscriptions_api
 
   mongo:
     image: mongo
