@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using CryptoScan.Constants;
 using CryptoScan.Subscriptions.Worker.Models;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -12,10 +13,15 @@ public class SubscriptionChangeMessageReceiver : BackgroundService
   private readonly IConnection _connection;  
   private readonly IModel _channel;
   private readonly ISubscriptionService _subscriptionService;
+  private readonly ILogger _logger;
 
-  public SubscriptionChangeMessageReceiver(IConnectionFactory connectionFactory, ISubscriptionService subscriptionService)
+  public SubscriptionChangeMessageReceiver(
+    IConnectionFactory connectionFactory, 
+    ISubscriptionService subscriptionService, 
+    ILogger<SubscriptionChangeMessageReceiver> logger)
   {
     _subscriptionService = subscriptionService;
+    _logger = logger;
     _connection = connectionFactory.CreateConnection();
     DeclareExchangeAndQueues(_connection);
 
@@ -69,6 +75,8 @@ public class SubscriptionChangeMessageReceiver : BackgroundService
 
   private async Task OnSubscriptionCreateRequestReceived(Subscription message, ulong deliveryTag)
   {
+    ArgumentNullException.ThrowIfNull(message);
+    _logger.LogInformation($"Processing create request {message}");
     var success = await _subscriptionService.Create(message);
     if (success)
       _channel.BasicAck(deliveryTag, false);
@@ -78,6 +86,8 @@ public class SubscriptionChangeMessageReceiver : BackgroundService
   
   private async Task OnSubscriptionUpdateRequestReceived(Subscription message, ulong deliveryTag)
   {
+    ArgumentNullException.ThrowIfNull(message);
+    _logger.LogInformation($"Processing update request {message}");
     var success = await _subscriptionService.Update(message);
     if (success)
       _channel.BasicAck(deliveryTag, false);
@@ -87,6 +97,8 @@ public class SubscriptionChangeMessageReceiver : BackgroundService
   
   private async Task OnSubscriptionDeleteRequestReceived(Subscription message, ulong deliveryTag)
   {
+    ArgumentNullException.ThrowIfNull(message);
+    _logger.LogInformation($"Processing delete request {message}");
     var success = await _subscriptionService.Delete(message);
     if (success)
       _channel.BasicAck(deliveryTag, false);

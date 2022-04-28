@@ -1,21 +1,22 @@
 using CryptoScan.Subscriptions.Worker;
+using CryptoScan.Subscriptions.Worker.Options;
 using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddConsole();
 
+var rabbitMqOptions = builder.Configuration.GetSection(RabbitMqOptions.SectionName).Get<RabbitMqOptions>()!;
 builder.Services.AddSingleton<IConnectionFactory>(new ConnectionFactory
 {
-    HostName = builder.Configuration["RabbitMQ:HostName"], 
-    Port = Convert.ToInt32(builder.Configuration["RabbitMQ:Port"]), 
-    UserName = builder.Configuration["RabbitMQ:UserName"], 
-    Password = builder.Configuration["RabbitMQ:Password"]
+    HostName = rabbitMqOptions.HostName, 
+    Port = rabbitMqOptions.Port, 
+    UserName = rabbitMqOptions.UserName, 
+    Password = rabbitMqOptions.Password
 });
 
-var uri = new Uri(builder.Configuration["SubscriptionsApi:BaseUrl"]!);
-builder.Services.AddHttpClient<ISubscriptionService, SubscriptionService>(client =>
-{
-    client.BaseAddress = uri;
-});
+builder.Services.Configure<SubscriptionsApiOptions>(
+    builder.Configuration.GetSection(SubscriptionsApiOptions.SectionName));
+builder.Services.AddHttpClient();
 builder.Services.AddSingleton<ISubscriptionService, SubscriptionService>();
 builder.Services.AddHostedService<SubscriptionChangeMessageReceiver>();
 

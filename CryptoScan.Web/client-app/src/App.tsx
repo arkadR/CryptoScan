@@ -25,7 +25,7 @@ import {
   let confirmEmail = () => {
     setIsEmailSet(true);
     getAvailableSymbols();
-    getSubscriptions();
+    getSubscriptions(email); //TODO: This should be userId somewhere from OAuth or whatever
   }
 
   let getAvailableSymbols = async () => {
@@ -34,8 +34,8 @@ import {
     setSymbols(symbols);
   }
 
-  let getSubscriptions = async () => {
-    let response = await get("info/subscriptions");
+  let getSubscriptions = async (userId: string) => {
+    let response = await get(`info/subscriptions?userId=${userId}`);
     let subscriptions = (await response.json()) as Subscription[];
     setSubscriptions(subscriptions);
   }

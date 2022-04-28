@@ -1,4 +1,6 @@
 using CryptoScan.Subscriptions.Worker.Models;
+using CryptoScan.Subscriptions.Worker.Options;
+using Microsoft.Extensions.Options;
 
 namespace CryptoScan.Subscriptions.Worker;
 
@@ -6,10 +8,11 @@ public class SubscriptionService : ISubscriptionService
 {
   private readonly HttpClient _httpClient;
 
-  public SubscriptionService(HttpClient httpClient)
+  public SubscriptionService(HttpClient httpClient,
+    IOptions<SubscriptionsApiOptions> options)
   {
     _httpClient = httpClient;
-    _httpClient.BaseAddress = new Uri("http://localhost:8001");
+    _httpClient.BaseAddress = new Uri(options.Value.Url);
   }
 
   public async Task<bool> Create(Subscription subscription)

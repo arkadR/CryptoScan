@@ -46,9 +46,11 @@ public class SubscriptionsModule : ICarterModule
   }
 
 
-  private async Task<IResult> GetSubscriptions()
+  private async Task<IResult> GetSubscriptions(string? userId)
   {
-    var subscriptions = await _subscriptionsService.GetSubscriptions();
+    var subscriptions = userId is null
+      ? await _subscriptionsService.GetSubscriptions()
+      : await _subscriptionsService.GetSubscriptions(userId);
     return Results.Ok(subscriptions);
   }
 

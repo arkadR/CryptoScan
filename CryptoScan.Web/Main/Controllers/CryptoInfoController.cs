@@ -23,7 +23,7 @@ public class CryptoInfoController : ControllerBase
   }
 
   [HttpGet, Route("info/exchange")]
-  //[ResponseCache(CacheProfileName = "2h")]
+  [ResponseCache(CacheProfileName = "2h")]
   public async Task<ActionResult<ExchangeInfo>> GetExchangeInfoAsync()
   {
     return await _http.Get<ExchangeInfo>(
@@ -33,13 +33,13 @@ public class CryptoInfoController : ControllerBase
   }
 
   [HttpGet, Route("info/exchange/symbols")]
-  //[ResponseCache(CacheProfileName = "2h")]
+  [ResponseCache(CacheProfileName = "2h")]
   public async Task<ActionResult<List<CryptocurrencySymbol>>> GetSymbolsAsync()
   {
-    var r = await GetExchangeInfoAsync();
+    /*var r = await GetExchangeInfoAsync();
     var x = r.Value.Symbols.Select(symbol =>
       new CryptocurrencySymbol(symbol.Symbol, symbol.BaseAsset, symbol.QuoteAsset));
-    return x.ToList();
+    return x.ToList();*/
     return (await GetExchangeInfoAsync())
       .OnSuccess(exchangeInfo => exchangeInfo.Symbols
         .Select(symbol => new CryptocurrencySymbol(symbol.Symbol, symbol.BaseAsset, symbol.QuoteAsset))
@@ -57,10 +57,10 @@ public class CryptoInfoController : ControllerBase
   }
 
   [HttpGet, Route("info/subscriptions")]
-  public async Task<ActionResult<List<Subscription>>> GetSubscriptionsInfo()
+  public async Task<ActionResult<List<Subscription>>> GetSubscriptionsInfo(string userId)
   {
     return await _http.Get<List<Subscription>>(
-     url: _subscriptionsApiUrl,
+     url: $"{_subscriptionsApiUrl}?userId={userId}",
      notFoundError: "Could not fetch exchange info from subscriptions api",
      badRequestError: "Subscriptions api server not available");
   }

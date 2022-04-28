@@ -20,6 +20,13 @@ public class SubscriptionsService
       .Find(_ => true)
       .ToListAsync();
   }
+  
+  public async Task<List<Subscription>> GetSubscriptions(string userId)
+  {
+    return await _subscriptionsCollection
+      .Find(s => s.UserId == userId)
+      .ToListAsync();
+  }
 
   public async Task<Maybe<Subscription>> GetSubscription(string id)
   {

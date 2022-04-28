@@ -15,15 +15,11 @@ builder.Services.AddSingleton(new ConnectionFactory
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IHttp, Http>();
 builder.Services.AddResponseCaching();
-builder.Services.AddControllers();/*
+builder.Services.AddControllers();
 builder.Services.AddControllers(options =>
 {
-  options.CacheProfiles.Add("2h",
-      new CacheProfile()
-      {
-        Duration = 2*60*60
-      });
-});*/
+  options.CacheProfiles.Add("2h", new CacheProfile { Duration = 2*60*60 });
+});
 
 var app = builder.Build();
 
