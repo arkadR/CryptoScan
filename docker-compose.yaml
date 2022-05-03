@@ -41,4 +41,3 @@ services:
       - spring_mail_port=${MAIL_PORT}
       - spring_mail_username=${MAIL_USERNAME}
       - spring_mail_password=${MAIL_PASSWORD}
-      - spring_mail_password=${MAIL_PASSWORD}
