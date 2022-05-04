@@ -4,8 +4,8 @@ public record Subscription(
   string email, 
   Symbol symbol,
   TimeRange timeRange, 
-  double threshold, 
-  double percentageThreshold,
+  double? threshold, 
+  double? percentageThreshold,
   Trend trend = Trend.Unspecified);
 
 public record Symbol(
@@ -14,8 +14,8 @@ public record Symbol(
   string quoteAsset);
 
 public record TimeRange(
-  DateTime startDate, 
-  DateTime endDate);
+  DateTime? startDate, 
+  DateTime? endDate);
 
 public enum Trend
 {

@@ -1,16 +1,15 @@
 import {useState} from 'react';
-import { Symbol } from './Model/Symbol';
-import { Subscription } from './Model/Subscription';
+import { Symbol, Subscription, TimeRange, Trend } from './Models';
 import {post, get, del, patch} from './Http';
 import './App.css';
-import SymbolPanel from "./SymbolPanel";
 import SubscriptionPanel from "./SubscriptionPanel";
 import { 
   Box,
   TableRow,
   TableCell,
   TextField,
-  Button
+  Button,
+  Divider
  } from '@material-ui/core';
 
  export default function App() {
@@ -40,29 +39,26 @@ import {
     setSubscriptions(subscriptions);
   }
 
-  let subscribe = async (symbol: Symbol, threshold: number) => {
-    let subscription = {email: email, symbol: symbol, threshold: threshold} as Subscription;
-    await post("subscriptions/subscribe", JSON.stringify(subscription));
-    let newSubscriptions = [...subscriptions as Subscription[], subscription];
+  let subscribe = async (newSubscription: Subscription) => {
+    await post("subscriptions/subscribe", JSON.stringify(newSubscription));
+    let newSubscriptions = [...subscriptions as Subscription[], newSubscription];
     setSubscriptions(newSubscriptions);
   }
 
-  let update = async (subscription: Subscription, threshold: number) => {
-    let newSubscription = {email: subscription.email, symbol: subscription.symbol, threshold: threshold} as Subscription;
+  let update = async (newSubscription: Subscription) => {
     await patch("subscriptions/update", JSON.stringify(newSubscription));
-    subscriptions?.push(newSubscription);
-    removeSubscription(subscription);
+    let newSubscriptions = subscriptions?.filter(sub => sub.symbol !== newSubscription.symbol);
+    newSubscriptions?.push(newSubscription);
+    setSubscriptions(newSubscriptions);    
   }
 
   let deleteSubscription = async (subscription: Subscription) => {
     await del("subscriptions/unsubscribe", JSON.stringify(subscription));
-    removeSubscription(subscription);
-  }
-
-  let removeSubscription = (subscription: Subscription) => {
-    let newSubscriptions = subscriptions?.filter(sub => sub !== subscription);
+    let newSubscriptions = subscriptions?.filter(sub => sub.symbol !== subscription.symbol);
     setSubscriptions(newSubscriptions);
   }
+
+  let emptyTimeRange = {startDate: null, endDate: null} as TimeRange;
 
   return (
     <div className="App">
@@ -72,15 +68,20 @@ import {
         <img src={require('./logo-name.png')} alt="logo" />
         {isEmailSet
           ? <>
-              {subscriptions?.sort().map((subscription) => (
+              {subscriptions?.map((subscription) => (
                 <SubscriptionPanel 
                   subscription={subscription}
+                  symbolMode={false}
                   updateAction={update}
-                  deleteAction={deleteSubscription}/>
+                  deleteAction={deleteSubscription}
+                  subscribeAction={subscribe}/>
               ))}
-              {symbols?.filter(symbol => subscriptions?.find(sub => sub.symbol.symbol === symbol.symbol) === undefined).sort().map((symbol) => (
-                <SymbolPanel 
-                  symbol={symbol}
+              {symbols?.filter(sm => !subscriptions?.find(sub => sub.symbol.baseAsset === sm.baseAsset)).map(symbol => (
+                <SubscriptionPanel 
+                  subscription={{email: email, symbol: symbol, timeRange: emptyTimeRange, trend: Trend.Unspecified} as Subscription}
+                  symbolMode={true}
+                  updateAction={update}
+                  deleteAction={deleteSubscription}
                   subscribeAction={subscribe}/>
               ))}
             </>
