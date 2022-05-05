@@ -11,7 +11,6 @@ on:
 
 jobs:
   build_subscriptions_api:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -59,11 +58,6 @@ jobs:
             GH_NUGET_USERNAME=${{ secrets.GH_NUGET_USERNAME }}
             GH_NUGET_PAT=${{ secrets.GH_NUGET_PAT }}
 
-  build_subscriptions_worker:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
