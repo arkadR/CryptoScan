@@ -8,8 +8,7 @@ import {
   TableRow,
   TableCell,
   TextField,
-  Button,
-  Divider
+  Button
  } from '@material-ui/core';
 
  export default function App() {
@@ -23,11 +22,11 @@ import {
 
   let confirmEmail = () => {
     setIsEmailSet(true);
-    getAvilableSymbols()
+    getAvailableSymbols()
     getSubscriptions()
   }
 
-  let getAvilableSymbols = async () => {
+  let getAvailableSymbols = async () => {
     let response = await get("info/exchange/symbols/" + quoteAsset);
     let symbols = (await response.json()) as Symbol[];
     setSymbols(symbols);
