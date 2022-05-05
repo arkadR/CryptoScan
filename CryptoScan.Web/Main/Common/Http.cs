@@ -32,7 +32,9 @@ internal class Http : IHttp
     }
     catch (Exception ex)
     {
-      return new BadRequestObjectResult($"{badRequestError}, error: {ex.Message}");
+      return new BadRequestObjectResult($@"{badRequestError}, 
+url: {url}, 
+error: {ex.Message}");
     }
   }
 }

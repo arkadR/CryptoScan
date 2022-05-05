@@ -8,13 +8,18 @@ namespace CryptoScan.Web.Main.Controllers;
 [ApiController]
 public class CryptoInfoController : ControllerBase
 {
-  private const string _getExchangeInfoUrl = "https://api1.binance.com/api/v1/exchangeInfo";
+  private readonly string _getExchangeInfoUrl;
+  private readonly string _subscriptionsApiUrl;
 
   private readonly IHttp _http;
 
-  public CryptoInfoController(IHttp http)
+  public CryptoInfoController(IConfiguration configuration, IHttp http)
   {
     _http = http;
+    _getExchangeInfoUrl = configuration["Binance:ExchangeInfoUrl"]!;
+    var apiHost = configuration["SubscriptionsApi:HostName"];
+    var apiEndpoint = configuration["SubscriptionsApi:Endpoints:Subscriptions"];
+    _subscriptionsApiUrl = $"http://{apiHost}/{apiEndpoint}";
   }
 
   [HttpGet, Route("info/exchange")]
@@ -46,6 +51,13 @@ public class CryptoInfoController : ControllerBase
         .Where(symbol => symbol.quoteAsset == quoteAsset.ToUpper())
         .ToList());
   }
-}
 
-public record Symbol(string symbol, string baseAsset, string quoteAsset);
+  [HttpGet, Route("info/subscriptions")]
+  public async Task<ActionResult<List<Subscription>>> GetSubscriptionsInfo()
+  {
+    return await _http.Get<List<Subscription>>(
+     url: _subscriptionsApiUrl,
+     notFoundError: "Could not fetch exchange info from subscriptions api",
+     badRequestError: "Subscriptions api server not avilable");
+  }
+}
