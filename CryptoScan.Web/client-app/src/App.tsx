@@ -3,25 +3,19 @@ import { Symbol, Subscription, TimeRange, Trend } from './Models';
 import {post, get, del, patch} from './Http';
 import './App.css';
 import SubscriptionPanel from "./SubscriptionPanel";
-import { 
-  Box,
-  TableRow,
-  TableCell,
-  TextField,
-  Button
- } from '@material-ui/core';
+import { GoogleLogin, GoogleLogout, GoogleLoginResponse} from 'react-google-login';
+
+const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID as string;
+const quoteAsset : string = "EUR";
 
  export default function App() {
-
-  const quoteAsset : string = "EUR";
   
   let [symbols, setSymbols] = useState<Symbol[]>();
   let [subscriptions, setSubscriptions] = useState<Subscription[]>();
-  let [isEmailSet, setIsEmailSet] = useState(false);
-  let [email, setEmail] = useState("")
+  let [userId, setUserId] = useState<string | null>(null);
 
-  let confirmEmail = () => {
-    setIsEmailSet(true);
+  let handleLoginSuccess = (userId: string) => {
+    setUserId(userId)
     getAvailableSymbols()
     getSubscriptions()
   }
@@ -63,9 +57,8 @@ import {
     <div className="App">
       <header className="App-header">
         <img src={require('./logo.png')} alt="logo" className="App-logo" />
-        <Box height="25px"/>
         <img src={require('./logo-name.png')} alt="logo" />
-        {isEmailSet
+        {userId !== null
           ? <>
               {subscriptions?.map((subscription) => (
                 <SubscriptionPanel 
@@ -77,31 +70,25 @@ import {
               ))}
               {symbols?.filter(sm => !subscriptions?.find(sub => sub.symbol.baseAsset === sm.baseAsset)).map(symbol => (
                 <SubscriptionPanel 
-                  subscription={{email: email, symbol: symbol, timeRange: emptyTimeRange, trend: Trend.Unspecified} as Subscription}
+                  subscription={{userId: userId, symbol: symbol, timeRange: emptyTimeRange, trend: Trend.Unspecified} as Subscription}
                   symbolMode={true}
                   updateAction={update}
                   deleteAction={deleteSubscription}
                   subscribeAction={subscribe}/>
               ))}
+              {<GoogleLogout
+                clientId={clientId}
+                buttonText={"Logout"}
+                onLogoutSuccess={()=>setUserId(null)}
+              />}
             </>
-          : <TableRow>
-              <TableCell>Email: </TableCell>
-              <TableCell>
-                <TextField
-                  id="email"
-                  type="email"
-                  variant="outlined"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                </TableCell>
-                <TableCell>
-                  <Button 
-                    disabled={email.length <= 0} // email validation?
-                    onClick={confirmEmail}>
-                    Confirm email
-                  </Button>
-                </TableCell>
-            </TableRow>  }
+          : <GoogleLogin
+              clientId={clientId}
+              buttonText="Sign In with Google"
+              onSuccess={response => handleLoginSuccess((response as GoogleLoginResponse).profileObj.googleId)}
+              onFailure={response => console.log(response)}
+              isSignedIn={true}
+            />}
       </header>
     </div>
   );

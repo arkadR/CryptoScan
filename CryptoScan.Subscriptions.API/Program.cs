@@ -4,13 +4,13 @@ var app = builder.Build();
 app.MapGet("subscriptions", () => new List<Subscription>
 {
   new Subscription(
-      email: "test@gmail.com",
+      userId: "testUserId",
       symbol: new Symbol("BTCETH", "BTC", "ETH"),
       timeRange: new TimeRange(DateTime.Now, DateTime.Now.AddYears(2)),
       threshold: 3.2,
       percentageThreshold: 50),
   new Subscription(
-      email: "test@gmail.com",
+      userId: "testUserId",
       symbol: new Symbol("LTCBTC", "LTC", "BTC"),
       timeRange: new TimeRange(DateTime.Now, DateTime.Now.AddMonths(4)),
       threshold: 0.975,
@@ -21,7 +21,7 @@ app.MapGet("subscriptions", () => new List<Subscription>
 app.Run();
 
 public record Subscription(
-  string email,
+  string userId,
   Symbol symbol,
   TimeRange timeRange,
   double? threshold,
