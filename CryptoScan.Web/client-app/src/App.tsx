@@ -33,7 +33,7 @@ import {
   }
 
   let getSubscriptions = async () => {
-    let response = await get(`info/subscriptions/email=${email}`);
+    let response = await get(`info/subscriptions?email=${email}`);
     let subscriptions = (await response.json()) as Subscription[];
     setSubscriptions(subscriptions);
   }
