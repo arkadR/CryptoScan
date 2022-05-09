@@ -61,7 +61,6 @@ jobs:
 
   build_subscriptions_worker:
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -81,7 +80,6 @@ jobs:
   
   build_messaging_service:
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
