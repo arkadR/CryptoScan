@@ -55,4 +55,42 @@ jobs:
         with:
           context: "CryptoScan.Web"
           push: false
+          build-args: |
+            GH_NUGET_USERNAME=${{ secrets.GH_NUGET_USERNAME }}
+            GH_NUGET_PAT=${{ secrets.GH_NUGET_PAT }}
+
+  build_subscriptions_worker:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+          
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: "CryptoScan.Subscriptions.Worker"
+          push: false
+          build-args: |
+            GH_NUGET_USERNAME=${{ secrets.GH_NUGET_USERNAME }}
+            GH_NUGET_PAT=${{ secrets.GH_NUGET_PAT }}
       
+  
+  build_messaging_service:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: "CryptoScan.Messaging.Service"
+          push: false
