@@ -4,12 +4,12 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-ARG GITHUB_TOKEN
-ARG GITHUB_USERNAME
+ARG GH_NUGET_PAT
+ARG GH_NUGET_USERNAME
 
 WORKDIR /src
 COPY CryptoScan.Subscriptions.Worker.csproj .
-RUN dotnet nuget add source --username $GITHUB_USERNAME --password $GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/arkadR/index.json"
+RUN dotnet nuget add source --username $GH_NUGET_USERNAME --password $GH_NUGET_PAT --store-password-in-clear-text --name github "https://nuget.pkg.github.com/arkadR/index.json"
 RUN dotnet restore "CryptoScan.Subscriptions.Worker.csproj"
 COPY . .
 RUN dotnet build CryptoScan.Subscriptions.Worker.csproj -c Release -o /app/build
