@@ -46,11 +46,11 @@ public class SubscriptionsModule : ICarterModule
   }
 
 
-  private async Task<IResult> GetSubscriptions(string? userId)
+  private async Task<IResult> GetSubscriptions(string? email)
   {
-    var subscriptions = userId is null
+    var subscriptions = email is null
       ? await _subscriptionsService.GetSubscriptions()
-      : await _subscriptionsService.GetSubscriptions(userId);
+      : await _subscriptionsService.GetSubscriptions(email);
     return Results.Ok(subscriptions);
   }
 
@@ -76,9 +76,9 @@ public class SubscriptionsModule : ICarterModule
       : Results.NotFound();
   }
   
-  private async Task<IResult> DeleteSubscriptionParametrized(string userId, string symbol)
+  private async Task<IResult> DeleteSubscriptionParametrized(string email, string symbol)
   {
-    var subscription = await _subscriptionsService.GetSubscription(userId, symbol);
+    var subscription = await _subscriptionsService.GetSubscription(email, symbol);
     return subscription.HasValue
       ? await DeleteSubscription(subscription.Value.SubscriptionId!)
       : Results.NotFound();
@@ -94,9 +94,9 @@ public class SubscriptionsModule : ICarterModule
         : Results.NotFound();
   }
   
-  private async Task<IResult> UpdateSubscriptionParametrized(string userId, string symbol, SubscriptionUpdateProperties updateProperties)
+  private async Task<IResult> UpdateSubscriptionParametrized(string email, string symbol, SubscriptionUpdateProperties updateProperties)
   {
-    var subscription = await _subscriptionsService.GetSubscription(userId, symbol);
+    var subscription = await _subscriptionsService.GetSubscription(email, symbol);
     return subscription.HasValue
       ? await UpdateSubscription(subscription.Value.SubscriptionId!, updateProperties)
       : Results.NotFound();

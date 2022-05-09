@@ -21,10 +21,10 @@ public class SubscriptionsService
       .ToListAsync();
   }
   
-  public async Task<List<Subscription>> GetSubscriptions(string userId)
+  public async Task<List<Subscription>> GetSubscriptions(string email)
   {
     return await _subscriptionsCollection
-      .Find(s => s.Email == userId)
+      .Find(s => s.Email == email)
       .ToListAsync();
   }
 
@@ -36,10 +36,10 @@ public class SubscriptionsService
       .ToMaybe();
   }
   
-  public async Task<Maybe<Subscription>> GetSubscription(string userId, string symbol)
+  public async Task<Maybe<Subscription>> GetSubscription(string email, string symbol)
   {
     return (await _subscriptionsCollection
-        .Find(x => x.Email == userId && x.Symbol.Symbol == symbol)
+        .Find(x => x.Email == email && x.Symbol.Symbol == symbol)
         .SingleOrDefaultAsync())
       .ToMaybe();
   }

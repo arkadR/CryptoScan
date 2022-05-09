@@ -63,7 +63,7 @@ services:
       - RabbitMQ__Port=5672
       - RabbitMQ__UserName=user
       - RabbitMQ__Password=password
-      - SubscriptionsApi__Url=subscriptions_api
+      - SubscriptionsApi__Url=http://subscriptions_api
 
   mongo:
     image: mongo
