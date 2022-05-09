@@ -22,8 +22,8 @@ import {
 
   let confirmEmail = () => {
     setIsEmailSet(true);
-    getAvailableSymbols()
-    getSubscriptions()
+    getAvailableSymbols();
+    getSubscriptions();
   }
 
   let getAvailableSymbols = async () => {
@@ -33,7 +33,7 @@ import {
   }
 
   let getSubscriptions = async () => {
-    let response = await get("info/subscriptions");
+    let response = await get(`info/subscriptions/userId=${email}`);
     let subscriptions = (await response.json()) as Subscription[];
     setSubscriptions(subscriptions);
   }

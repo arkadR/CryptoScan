@@ -8,15 +8,14 @@ ARG GITHUB_TOKEN
 ARG GITHUB_USERNAME
 
 WORKDIR /src
-COPY ["CryptoScan.Subscriptions.Worker/CryptoScan.Subscriptions.Worker.csproj", "CryptoScan.Subscriptions.Worker/"]
+COPY CryptoScan.Subscriptions.Worker.csproj .
 RUN dotnet nuget add source --username $GITHUB_USERNAME --password $GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/arkadR/index.json"
-RUN dotnet restore "CryptoScan.Subscriptions.Worker/CryptoScan.Subscriptions.Worker.csproj"
+RUN dotnet restore "CryptoScan.Subscriptions.Worker.csproj"
 COPY . .
-WORKDIR "/src/CryptoScan.Subscriptions.Worker"
-RUN dotnet build "CryptoScan.Subscriptions.Worker.csproj" -c Release -o /app/build
+RUN dotnet build CryptoScan.Subscriptions.Worker.csproj -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "CryptoScan.Subscriptions.Worker.csproj" -c Release -o /app/publish
+RUN dotnet publish CryptoScan.Subscriptions.Worker.csproj -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
