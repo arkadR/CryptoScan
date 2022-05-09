@@ -58,6 +58,9 @@ services:
       args:
         - GITHUB_TOKEN=${GH_NUGET_PAT}
         - GITHUB_USERNAME=${GH_NUGET_USERNAME}
+    depends_on:
+      - subscriptions_api
+      - rabbit
     environment:
       - RabbitMQ__HostName=rabbit
       - RabbitMQ__Port=5672

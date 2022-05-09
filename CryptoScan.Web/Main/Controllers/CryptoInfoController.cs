@@ -37,10 +37,6 @@ public class CryptoInfoController : ControllerBase
   [ResponseCache(CacheProfileName = "2h")]
   public async Task<ActionResult<List<CryptocurrencySymbol>>> GetSymbolsAsync()
   {
-    /*var r = await GetExchangeInfoAsync();
-    var x = r.Value.Symbols.Select(symbol =>
-      new CryptocurrencySymbol(symbol.Symbol, symbol.BaseAsset, symbol.QuoteAsset));
-    return x.ToList();*/
     return (await GetExchangeInfoAsync())
       .OnSuccess(exchangeInfo => exchangeInfo.Symbols
         .Select(symbol => new CryptocurrencySymbol(symbol.Symbol, symbol.BaseAsset, symbol.QuoteAsset))
@@ -48,7 +44,7 @@ public class CryptoInfoController : ControllerBase
   }
 
   [HttpGet, Route("info/exchange/symbols/{quoteAsset}")]
-  //[ResponseCache(CacheProfileName = "2h")]
+  [ResponseCache(CacheProfileName = "2h")]
   public async Task<ActionResult<List<CryptocurrencySymbol>>> GetByQuoteAssetAsync(string quoteAsset)
   {
     return (await GetSymbolsAsync())
