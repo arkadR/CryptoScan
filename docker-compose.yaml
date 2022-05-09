@@ -15,9 +15,14 @@ services:
     build: .\CryptoScan.Subscriptions.API
     ports: 
       - 8001:80
+    environment:
+      - SubscriptionsDatabase__ConnectionString=mongodb://user:password@mongo:27017
+      - SubscriptionsDatabase__DatabaseName=SubscriptionsDB
+      - SubscriptionsDatabase__SubscriptionsCollectionName=Subscriptions
     
   web:
     build: .\CryptoScan.Web
+    hostname: webapp
     ports: 
       - 8002:80
     environment:
@@ -41,3 +46,22 @@ services:
       - spring_mail_port=${MAIL_PORT}
       - spring_mail_username=${MAIL_USERNAME}
       - spring_mail_password=${MAIL_PASSWORD}
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: user
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://user:password@mongo:27017
