@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using CryptoScan.Web.Main.Extensions;
 using CryptoScan.Web.Main.Common;
+using CryptoScan.Web.Main.Models.Binance;
 
 namespace CryptoScan.Web.Main.Controllers;
 

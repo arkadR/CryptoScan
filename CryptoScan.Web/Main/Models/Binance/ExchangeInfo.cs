@@ -1,6 +1,4 @@
-﻿using CryptoScan.Web.Models;
-
-namespace CryptoScan.Web.Main.Models;
+﻿namespace CryptoScan.Web.Main.Models.Binance;
 
 public class ExchangeInfo
 {
