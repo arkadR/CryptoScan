@@ -11,7 +11,7 @@ public record Subscription
   [StringLength(24, MinimumLength = 24)]
   public string? SubscriptionId { get; init; }
 
-  public string Email { get; init; }
+  public string UserId { get; init; }
 
   public CryptocurrencySymbol Symbol { get; init; }
 

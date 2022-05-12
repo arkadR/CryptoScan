@@ -1,7 +1,7 @@
 ﻿namespace CryptoScan.Web.Main.Models;
 
 public record Subscription(
-  string email, 
+  string userId, 
   Symbol symbol,
   TimeRange timeRange, 
   double? threshold, 
