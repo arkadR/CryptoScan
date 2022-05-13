@@ -20,17 +20,39 @@ public class SubscriptionsService
       .Find(_ => true)
       .ToListAsync();
   }
+  
+  public async Task<List<Subscription>> GetSubscriptions(string email)
+  {
+    return await _subscriptionsCollection
+      .Find(s => s.Email == email)
+      .ToListAsync();
+  }
 
   public async Task<Maybe<Subscription>> GetSubscription(string id)
   {
     return (await _subscriptionsCollection
         .Find(x => x.SubscriptionId == id)
-        .FirstOrDefaultAsync())
+        .SingleOrDefaultAsync())
+      .ToMaybe();
+  }
+  
+  public async Task<Maybe<Subscription>> GetSubscription(string email, string symbol)
+  {
+    return (await _subscriptionsCollection
+        .Find(x => x.Email == email && x.Symbol.Symbol == symbol)
+        .SingleOrDefaultAsync())
       .ToMaybe();
   }
 
   public async Task<Result<Subscription>> CreateSubscription(Subscription subscription)
   {
+    var alreadyExists = await _subscriptionsCollection
+      .Find(x => x.Email == subscription.Email && x.Symbol.Symbol == subscription.Symbol.Symbol)
+      .AnyAsync();
+    
+    if (alreadyExists)
+      return Result.Failure<Subscription>("Subscription with specified parameters already exists");
+    
     var subscriptionToInsert = subscription with { }; // Creating a clone because MongoDB mutates the object on Insert
     await _subscriptionsCollection
       .InsertOneAsync(subscription);

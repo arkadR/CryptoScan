@@ -18,7 +18,8 @@ async function request(apiEndpoint: string, method: string, body: string | null 
   return fetch(apiEndpoint, {
     method: method,
     headers: {
-      'content-type': 'application/json;charset=UTF-8'
+      "content-type": "application/json;charset=UTF-8",
+      "Accept":"application/json"
     }, 
     body: body});
 }

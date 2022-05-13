@@ -29,15 +29,28 @@ public class SubscriptionsModule : ICarterModule
     app.MapPatch("/subscriptions/{id}", UpdateSubscription)
       .Produces(StatusCodes.Status204NoContent)
       .Produces(StatusCodes.Status404NotFound);
+    
+    // This is not RESTful at all, but I did not have time to do it properly 🤷‍
+    app.MapPatch("/subscriptions", UpdateSubscriptionParametrized)
+      .Produces(StatusCodes.Status204NoContent)
+      .Produces(StatusCodes.Status404NotFound);
 
     app.MapDelete("/subscriptions/{id}", DeleteSubscription)
       .Produces(StatusCodes.Status204NoContent)
       .Produces(StatusCodes.Status404NotFound);
+    
+    // Same
+    app.MapDelete("/subscriptions", DeleteSubscriptionParametrized)
+      .Produces(StatusCodes.Status204NoContent)
+      .Produces(StatusCodes.Status404NotFound);
   }
 
-  private async Task<IResult> GetSubscriptions()
+
+  private async Task<IResult> GetSubscriptions(string? email)
   {
-    var subscriptions = await _subscriptionsService.GetSubscriptions();
+    var subscriptions = email is null
+      ? await _subscriptionsService.GetSubscriptions()
+      : await _subscriptionsService.GetSubscriptions(email);
     return Results.Ok(subscriptions);
   }
 
@@ -48,7 +61,7 @@ public class SubscriptionsModule : ICarterModule
       ? Results.Ok(subscription)
       : Results.NotFound();
   }
-
+  
   private async Task<IResult> AddSubscription(Subscription subscription)
   {
     var createdSubscription = await _subscriptionsService.CreateSubscription(subscription);
@@ -62,12 +75,30 @@ public class SubscriptionsModule : ICarterModule
       ? Results.NoContent()
       : Results.NotFound();
   }
+  
+  private async Task<IResult> DeleteSubscriptionParametrized(string email, string symbol)
+  {
+    var subscription = await _subscriptionsService.GetSubscription(email, symbol);
+    return subscription.HasValue
+      ? await DeleteSubscription(subscription.Value.SubscriptionId!)
+      : Results.NotFound();
+  }
 
   private async Task<IResult> UpdateSubscription(string id, SubscriptionUpdateProperties updateProperties)
   {
-    var result = await _subscriptionsService.Update(id, updateProperties);
-    return result.IsSuccess
+    var (isSuccess, _, error) = await _subscriptionsService.Update(id, updateProperties);
+    return isSuccess
       ? Results.NoContent()
+      : error.Contains("Subscription with specified parameters already exists") 
+        ? Results.Conflict() 
+        : Results.NotFound();
+  }
+  
+  private async Task<IResult> UpdateSubscriptionParametrized(string email, string symbol, SubscriptionUpdateProperties updateProperties)
+  {
+    var subscription = await _subscriptionsService.GetSubscription(email, symbol);
+    return subscription.HasValue
+      ? await UpdateSubscription(subscription.Value.SubscriptionId!, updateProperties)
       : Results.NotFound();
   }
 }

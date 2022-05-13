@@ -21,7 +21,12 @@ services:
       - SubscriptionsDatabase__SubscriptionsCollectionName=Subscriptions
     
   web:
-    build: .\CryptoScan.Web
+    env_file: .env
+    build: 
+      context: .\CryptoScan.Web
+      args:
+        - GH_NUGET_PAT=${GH_NUGET_PAT}
+        - GH_NUGET_USERNAME=${GH_NUGET_USERNAME}
     hostname: webapp
     ports: 
       - 8002:80
@@ -46,6 +51,22 @@ services:
       - spring_mail_port=${MAIL_PORT}
       - spring_mail_username=${MAIL_USERNAME}
       - spring_mail_password=${MAIL_PASSWORD}
+      
+  subscriptions_service:
+    build: 
+      context: .\CryptoScan.Subscriptions.Worker
+      args:
+        - GH_NUGET_PAT=${GH_NUGET_PAT}
+        - GH_NUGET_USERNAME=${GH_NUGET_USERNAME}
+    depends_on:
+      - subscriptions_api
+      - rabbit
+    environment:
+      - RabbitMQ__HostName=rabbit
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=user
+      - RabbitMQ__Password=password
+      - SubscriptionsApi__Url=http://subscriptions_api
 
   mongo:
     image: mongo

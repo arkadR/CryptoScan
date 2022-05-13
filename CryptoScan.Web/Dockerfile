@@ -4,6 +4,8 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS restore
+ARG GH_NUGET_PAT
+ARG GH_NUGET_USERNAME
 
 # Install Node.js
 RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
@@ -13,6 +15,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
 
 WORKDIR /src
 COPY ["CryptoScan.Web.csproj", "."]
+
+RUN dotnet nuget add source --username $GH_NUGET_USERNAME --password $GH_NUGET_PAT --store-password-in-clear-text --name github "https://nuget.pkg.github.com/arkadR/index.json"
 RUN dotnet restore "CryptoScan.Web.csproj"
 COPY ["client-app/package.json", "client-app/package.json"]
 COPY ["client-app/package-lock.json", "client-app/package-lock.json"]

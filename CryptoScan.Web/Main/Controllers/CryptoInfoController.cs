@@ -30,35 +30,35 @@ public class CryptoInfoController : ControllerBase
     return await _http.Get<ExchangeInfo>(
       url: _getExchangeInfoUrl, 
       notFoundError: "Could not fetch exchange info from Binance",
-      badRequestError: "Bianance server not avilable");
+      badRequestError: "Binance server not available");
   }
 
   [HttpGet, Route("info/exchange/symbols")]
   [ResponseCache(CacheProfileName = "2h")]
-  public async Task<ActionResult<List<Symbol>>> GetSymbolsAsync()
+  public async Task<ActionResult<List<CryptocurrencySymbol>>> GetSymbolsAsync()
   {
     return (await GetExchangeInfoAsync())
       .OnSuccess(exchangeInfo => exchangeInfo.Symbols
-        .Select(symbol => new Symbol(symbol.Symbol, symbol.BaseAsset, symbol.QuoteAsset))
+        .Select(symbol => new CryptocurrencySymbol(symbol.Symbol, symbol.BaseAsset, symbol.QuoteAsset))
         .ToList());
   }
 
   [HttpGet, Route("info/exchange/symbols/{quoteAsset}")]
   [ResponseCache(CacheProfileName = "2h")]
-  public async Task<ActionResult<List<Symbol>>> GetByQuoteAssetAsync(string quoteAsset)
+  public async Task<ActionResult<List<CryptocurrencySymbol>>> GetByQuoteAssetAsync(string quoteAsset)
   {
     return (await GetSymbolsAsync())
       .OnSuccess(symbols => symbols
-        .Where(symbol => symbol.quoteAsset == quoteAsset.ToUpper())
+        .Where(symbol => symbol.QuoteAsset == quoteAsset.ToUpper())
         .ToList());
   }
 
   [HttpGet, Route("info/subscriptions")]
-  public async Task<ActionResult<List<Subscription>>> GetSubscriptionsInfo()
+  public async Task<ActionResult<List<Subscription>>> GetSubscriptionsInfo(string email)
   {
     return await _http.Get<List<Subscription>>(
-     url: _subscriptionsApiUrl,
+     url: $"{_subscriptionsApiUrl}?email={email}",
      notFoundError: "Could not fetch exchange info from subscriptions api",
-     badRequestError: "Subscriptions api server not avilable");
+     badRequestError: "Subscriptions api server not available");
   }
 }

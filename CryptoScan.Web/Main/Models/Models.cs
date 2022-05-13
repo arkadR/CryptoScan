@@ -1,21 +1,21 @@
 ﻿namespace CryptoScan.Web.Main.Models;
 
 public record Subscription(
-  string email, 
-  Symbol symbol,
-  TimeRange timeRange, 
-  double? threshold, 
-  double? percentageThreshold,
-  Trend trend = Trend.Unspecified);
+  string Email, 
+  CryptocurrencySymbol Symbol,
+  TimeRange TimeRange, 
+  double? Threshold, 
+  double? PercentageThreshold,
+  Trend Trend = Trend.Unspecified);
 
-public record Symbol(
-  string symbol, 
-  string baseAsset, 
-  string quoteAsset);
+public record CryptocurrencySymbol(
+  string Symbol, 
+  string BaseAsset, 
+  string QuoteAsset);
 
 public record TimeRange(
-  DateTime? startDate, 
-  DateTime? endDate);
+  DateTime? StartDate, 
+  DateTime? EndDate);
 
 public enum Trend
 {
