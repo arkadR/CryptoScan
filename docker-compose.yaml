@@ -72,6 +72,8 @@ services:
     build: .\CryptoScan.Monitoring.Service
     ports:
       - 8005:8080
+    environment:
+      - subscription_api_baseurl=http://subscriptions_api:80
 
   mongo:
     image: mongo
