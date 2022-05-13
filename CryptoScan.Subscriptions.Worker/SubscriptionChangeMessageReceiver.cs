@@ -23,22 +23,21 @@ public class SubscriptionChangeMessageReceiver : BackgroundService
     _subscriptionService = subscriptionService;
     _logger = logger;
     _connection = connectionFactory.CreateConnection();
-    DeclareExchangeAndQueues(_connection);
+    DeclareExchangeAndQueues();
 
     _channel = _connection.CreateModel();
   }
 
-  private void DeclareExchangeAndQueues(IConnection connection)
+  private void DeclareExchangeAndQueues()
   {
-    using var channel = connection.CreateModel();
-    channel.ExchangeDeclare(exchange: Exchanges.SubscriptionManagementExchange, ExchangeType.Direct);
+    _channel.ExchangeDeclare(exchange: Exchanges.SubscriptionManagementExchange, ExchangeType.Direct);
 
     foreach (var queueName in new List<string> {
                  Queues.SubscriptionCreate, 
                  Queues.SubscriptionUpdate, 
                  Queues.SubscriptionDelete})
     {
-      channel.QueueDeclare(
+      _channel.QueueDeclare(
         queue: queueName,
         durable: false,
         exclusive: false,
@@ -76,7 +75,7 @@ public class SubscriptionChangeMessageReceiver : BackgroundService
   private async Task OnSubscriptionCreateRequestReceived(Subscription message, ulong deliveryTag)
   {
     ArgumentNullException.ThrowIfNull(message);
-    _logger.LogInformation($"Processing create request {message}");
+    _logger.LogInformation("Processing create request {Message}", message);
     var success = await _subscriptionService.Create(message);
     if (success)
       _channel.BasicAck(deliveryTag, false);
@@ -87,7 +86,7 @@ public class SubscriptionChangeMessageReceiver : BackgroundService
   private async Task OnSubscriptionUpdateRequestReceived(Subscription message, ulong deliveryTag)
   {
     ArgumentNullException.ThrowIfNull(message);
-    _logger.LogInformation($"Processing update request {message}");
+    _logger.LogInformation("Processing update request {Message}", message);
     var success = await _subscriptionService.Update(message);
     if (success)
       _channel.BasicAck(deliveryTag, false);
@@ -98,7 +97,7 @@ public class SubscriptionChangeMessageReceiver : BackgroundService
   private async Task OnSubscriptionDeleteRequestReceived(Subscription message, ulong deliveryTag)
   {
     ArgumentNullException.ThrowIfNull(message);
-    _logger.LogInformation($"Processing delete request {message}");
+    _logger.LogInformation("Processing delete request {Message}", message);
     var success = await _subscriptionService.Delete(message);
     if (success)
       _channel.BasicAck(deliveryTag, false);
