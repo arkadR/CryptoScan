@@ -11,8 +11,8 @@ public class Subscription {
     private String SubscriptionId;
     private String email;
     private CryptocurrencySymbol Symbol;
-    private double threshold;
-    private double percentageThreshold;
+    private Double threshold;
+    private Double percentageThreshold;
     private TimeRange timeRange;
     private Trend trend;
 }

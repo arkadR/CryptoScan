@@ -13,10 +13,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MessageSender {
 
-    private static final int SCHEDULE_INTERVAL = 86400000;
+    private static final long SCHEDULE_INTERVAL = 30000L;
 
     private final RabbitTemplate rabbitTemplate;
 
@@ -36,14 +34,17 @@ public class MessageSender {
     @Qualifier("binanceWebClient")
     private final WebClient binanceWebClient;
 
-    @Scheduled(fixedRate = SCHEDULE_INTERVAL)
+    private final MonitoringService monitoringService;
+
+    @Scheduled(fixedRate = SCHEDULE_INTERVAL, initialDelay = 10000L)
     public void monitoringTask() {
-        List<Subscription> subscriptions = getSubscriptions();
-        subscriptions.forEach(System.out::println);
-        List<Ticker> tickers = subscriptions.stream()
-                .map(subscription -> getCryptoChanges(subscription.getSymbol()))
-                .collect(Collectors.toList());
-        tickers.forEach(System.out::println);
+        Map<Subscription, Ticker> subscriptionsToTickers = getSubscriptions().stream()
+                .collect(Collectors.toMap(Function.identity(), subscription -> getCryptoChanges(subscription.getSymbol())));
+        List<CryptoChangesMessage> messages = monitoringService.getMessages(subscriptionsToTickers);
+        messages.forEach(message -> {
+            rabbitTemplate.convertAndSend(queue.getName(), message);
+            log.info("Message sent to queue " + queue.getName() + ": " + message);
+        });
     }
 
     private List<Subscription> getSubscriptions() {

@@ -9,6 +9,6 @@ import lombok.ToString;
 @ToString
 public class Ticker {
     private String symbol;
-    private String priceChange;
-    private String priceChangePercent;
+    private double priceChange;
+    private double priceChangePercent;
 }
