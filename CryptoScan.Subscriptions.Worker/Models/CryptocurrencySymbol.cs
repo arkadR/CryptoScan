@@ -1,4 +1,4 @@
-namespace CryptoScan.Subscriptions.API.Models;
+namespace CryptoScan.Subscriptions.Worker.Models;
 
 public record CryptocurrencySymbol(
   string Symbol,

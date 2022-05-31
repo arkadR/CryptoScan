@@ -21,5 +21,5 @@ public record Subscription
 
   public TimeRange TimeRange { get; init; }
 
-  public Trend Trend { get; init; }= Trend.Unspecified;
+  public Trend Trend { get; init; } = Trend.Unspecified;
 }
