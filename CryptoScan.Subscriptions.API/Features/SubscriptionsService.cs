@@ -21,10 +21,10 @@ public class SubscriptionsService
       .ToListAsync();
   }
   
-  public async Task<List<Subscription>> GetSubscriptions(string email)
+  public async Task<List<Subscription>> GetSubscriptions(string userId)
   {
     return await _subscriptionsCollection
-      .Find(s => s.Email == email)
+      .Find(s => s.UserId == userId)
       .ToListAsync();
   }
 
@@ -36,10 +36,10 @@ public class SubscriptionsService
       .ToMaybe();
   }
   
-  public async Task<Maybe<Subscription>> GetSubscription(string email, string symbol)
+  public async Task<Maybe<Subscription>> GetSubscription(string userId, string symbol)
   {
     return (await _subscriptionsCollection
-        .Find(x => x.Email == email && x.Symbol.Symbol == symbol)
+        .Find(x => x.UserId == userId && x.Symbol.Symbol == symbol)
         .SingleOrDefaultAsync())
       .ToMaybe();
   }
@@ -47,7 +47,7 @@ public class SubscriptionsService
   public async Task<Result<Subscription>> CreateSubscription(Subscription subscription)
   {
     var alreadyExists = await _subscriptionsCollection
-      .Find(x => x.Email == subscription.Email && x.Symbol.Symbol == subscription.Symbol.Symbol)
+      .Find(x => x.UserId == subscription.UserId && x.Symbol.Symbol == subscription.Symbol.Symbol)
       .AnyAsync();
     
     if (alreadyExists)
