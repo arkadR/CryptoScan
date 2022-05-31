@@ -6,7 +6,7 @@ import SubscriptionPanel from "./SubscriptionPanel";
 import { GoogleOAuthProvider, GoogleLogin, googleLogout } from '@react-oauth/google';
 import { Box, Button } from '@material-ui/core';
 
- const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID as string;
+ const clientId = "28315789494-bmoihsf48vkjshc45dhejeg0ipimnndv.apps.googleusercontent.com";
  const quoteAsset : string = "EUR";
 
  export default function App() {
