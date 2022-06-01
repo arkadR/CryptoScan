@@ -3,27 +3,27 @@ import { Symbol, Subscription, TimeRange, Trend } from './Models';
 import {post, get, del, patch} from './Http';
 import './App.css';
 import SubscriptionPanel from "./SubscriptionPanel";
-import { 
-  Box,
-  TableRow,
-  TableCell,
-  TextField,
-  Button
- } from '@material-ui/core';
+import { GoogleOAuthProvider, GoogleLogin, googleLogout } from '@react-oauth/google';
+import { Box, Button } from '@material-ui/core';
+
+ const clientId = "28315789494-bmoihsf48vkjshc45dhejeg0ipimnndv.apps.googleusercontent.com";
+ const quoteAsset : string = "EUR";
 
  export default function App() {
-
-  const quoteAsset : string = "EUR";
   
   let [symbols, setSymbols] = useState<Symbol[]>();
   let [subscriptions, setSubscriptions] = useState<Subscription[]>();
-  let [isEmailSet, setIsEmailSet] = useState(false);
-  let [email, setEmail] = useState("")
+  let [userId, setUserId] = useState<string | undefined>(undefined);
 
-  let confirmEmail = () => {
-    setIsEmailSet(true);
+  let handleLoginSuccess = (userId: string | undefined) => {
+    setUserId(userId);
     getAvailableSymbols();
     getSubscriptions();
+  }
+
+  let handleLogout = () => {
+    googleLogout();
+    setUserId(undefined);
   }
 
   let getAvailableSymbols = async () => {
@@ -33,7 +33,7 @@ import {
   }
 
   let getSubscriptions = async () => {
-    let response = await get(`info/subscriptions?email=${email}`);
+    let response = await get(`info/subscriptions?email=${userId}`);
     let subscriptions = (await response.json()) as Subscription[];
     setSubscriptions(subscriptions);
   }
@@ -61,48 +61,44 @@ import {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={require('./logo.png')} alt="logo" className="App-logo" />
-        <Box height="25px"/>
-        <img src={require('./logo-name.png')} alt="logo" />
-        {isEmailSet
-          ? <>
-              {subscriptions?.map((subscription) => (
-                <SubscriptionPanel 
-                  subscription={subscription}
-                  symbolMode={false}
-                  updateAction={update}
-                  deleteAction={deleteSubscription}
-                  subscribeAction={subscribe}/>
-              ))}
-              {symbols?.filter(sm => !subscriptions?.find(sub => sub.symbol.baseAsset === sm.baseAsset)).map(symbol => (
-                <SubscriptionPanel 
-                  subscription={{email: email, symbol: symbol, timeRange: emptyTimeRange, trend: Trend.Unspecified} as Subscription}
-                  symbolMode={true}
-                  updateAction={update}
-                  deleteAction={deleteSubscription}
-                  subscribeAction={subscribe}/>
-              ))}
-            </>
-          : <TableRow>
-              <TableCell>Email: </TableCell>
-              <TableCell>
-                <TextField
-                  id="email"
-                  type="email"
-                  variant="outlined"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                </TableCell>
-                <TableCell>
-                  <Button 
-                    disabled={email.length <= 0} // email validation?
-                    onClick={confirmEmail}>
-                    Confirm email
-                  </Button>
-                </TableCell>
-            </TableRow>  }
-      </header>
+      <GoogleOAuthProvider clientId={clientId}>
+        <header className="App-header">
+          <img src={require('./logo.png')} alt="logo" className="App-logo" />
+          <Box height="25px"/>
+          <img src={require('./logo-name.png')} alt="logo" />
+          {userId 
+            ? <>
+                {subscriptions?.map((subscription) => (
+                  <SubscriptionPanel 
+                    subscription={subscription}
+                    symbolMode={false}
+                    updateAction={update}
+                    deleteAction={deleteSubscription}
+                    subscribeAction={subscribe}/>
+                ))}
+                {symbols?.filter(sm => !subscriptions?.find(sub => sub.symbol.baseAsset === sm.baseAsset)).map(symbol => (
+                  <SubscriptionPanel 
+                    subscription={{userId: userId, symbol: symbol, timeRange: emptyTimeRange, trend: Trend.Unspecified} as Subscription}
+                    symbolMode={true}
+                    updateAction={update}
+                    deleteAction={deleteSubscription}
+                    subscribeAction={subscribe}/>
+                ))}
+                {<Button 
+                  onClick={handleLogout} 
+                  variant="contained"
+                  color="secondary">
+                    Logout
+                </Button>}
+              </>
+            : <GoogleLogin
+                onSuccess={response => handleLoginSuccess(response.clientId)} // do we need client credential? 
+                onError={() => console.log('Login Failed')}
+                auto_select
+                useOneTap
+              />  }
+        </header>
+      </GoogleOAuthProvider>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 export type Subscription = {
-  email: string;
+  userId: string;
   symbol: Symbol;
   timeRange: TimeRange;
   threshold: number | null;
