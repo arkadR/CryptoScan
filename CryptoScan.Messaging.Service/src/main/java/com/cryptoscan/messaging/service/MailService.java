@@ -1,6 +1,7 @@
 package com.cryptoscan.messaging.service;
 
-import com.cryptoscan.messaging.model.news.News;
+import com.cryptoscan.messaging.model.mail.CurrencyNews;
+import com.cryptoscan.messaging.model.mail.EmailMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,24 +22,23 @@ public class MailService {
 
     private final SpringTemplateEngine templateEngine;
 
-    private String createHtmlBody(String currency, List<News> news) {
+    private String createHtmlBody(List<CurrencyNews> currencyNews) {
         Context context = new Context();
-        context.setVariable("currency", currency);
-        context.setVariable("news", news);
+        context.setVariable("currencyNews", currencyNews);
         return templateEngine.process("mail-template.html", context);
     }
 
-    public void sendNews(String email, String currency, List<News> news) {
-        String htmlBody = createHtmlBody(currency, news);
+    public void sendNews(EmailMessage emailMessage) {
+        String htmlBody = createHtmlBody(emailMessage.getCurrencyNews());
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false);
-            mimeMessageHelper.setTo(email);
-            mimeMessageHelper.setSubject("The latest news on " + currency);
+            mimeMessageHelper.setTo(emailMessage.getEmail());
+            mimeMessageHelper.setSubject("The latest news on " + String.join(", ", emailMessage.getCurrencies()));
             mimeMessageHelper.setText(htmlBody, true);
             mailSender.send(mimeMessage);
         };
         mailSender.send(preparator);
-        log.info("Mail sent to " + email);
+        log.info("Mail sent to " + emailMessage.getEmail());
     }
 
 }

@@ -6,8 +6,10 @@ import com.cryptoscan.monitoring.model.subscription.Trend;
 import com.cryptoscan.monitoring.model.ticker.Ticker;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,8 +20,12 @@ public class MonitoringService {
                 .filter(e -> isThresholdExceeded(e.getKey(), e.getValue()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        return subscriptions.stream()
-                .map(CryptoChangesMessage::fromSubscription)
+        Map<String, Set<String>> emailToSymbols = subscriptions.stream()
+                .collect(Collectors.groupingBy(Subscription::getEmail,
+                        Collectors.mapping(s -> s.getSymbol().getBaseAsset(), Collectors.toSet()))
+                );
+        return emailToSymbols.entrySet().stream()
+                .map(e -> CryptoChangesMessage.fromEmailAndSymbols(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
     }
 

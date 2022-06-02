@@ -16,5 +16,5 @@ public class News {
     private String url;
     @JsonProperty("published_at")
     private String publishedAt;
-    private List<NewsCurrency> currencies;
+    private List<Currency> currencies;
 }
