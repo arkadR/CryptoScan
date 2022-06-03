@@ -54,10 +54,10 @@ public class CryptoInfoController : ControllerBase
   }
 
   [HttpGet, Route("info/subscriptions")]
-  public async Task<ActionResult<List<Subscription>>> GetSubscriptionsInfo(string email)
+  public async Task<ActionResult<List<Subscription>>> GetSubscriptionsInfo(string userId)
   {
     return await _http.Get<List<Subscription>>(
-     url: $"{_subscriptionsApiUrl}?email={email}",
+     url: $"{_subscriptionsApiUrl}?userId={userId}",
      notFoundError: "Could not fetch exchange info from subscriptions api",
      badRequestError: "Subscriptions api server not available");
   }

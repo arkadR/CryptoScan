@@ -9,7 +9,8 @@ import lombok.ToString;
 @ToString
 public class Subscription {
     private String SubscriptionId;
-    private String email;
+    private String UserId;
+    private String Email;
     private CryptocurrencySymbol Symbol;
     private Double threshold;
     private Double percentageThreshold;

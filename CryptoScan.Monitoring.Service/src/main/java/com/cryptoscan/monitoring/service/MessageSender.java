@@ -38,12 +38,14 @@ public class MessageSender {
 
     @Scheduled(fixedRate = SCHEDULE_INTERVAL, initialDelay = 10000L)
     public void monitoringTask() {
+        log.info("Running scheduled process...");
         Map<Subscription, Ticker> subscriptionsToTickers = getSubscriptions().stream()
                 .collect(Collectors.toMap(Function.identity(), subscription -> getCryptoChanges(subscription.getSymbol())));
         List<CryptoChangesMessage> messages = monitoringService.getMessages(subscriptionsToTickers);
+        log.info("...Sending " + messages.size() + " messages");
         messages.forEach(message -> {
             rabbitTemplate.convertAndSend(queue.getName(), message);
-            log.info("Message sent to queue " + queue.getName() + ": " + message);
+            log.info("...Message sent to queue " + queue.getName() + ": " + message);
         });
     }
 
@@ -55,8 +57,10 @@ public class MessageSender {
                 .retrieve()
                 .bodyToMono(Subscription[].class)
                 .block();
+        // log.info("Fetched " + subscriptionsResponse.length() + " subscriptions");
         return subscriptionsResponse != null
-                ? Arrays.stream(subscriptionsResponse).collect(Collectors.toList()) : Collections.emptyList();
+                ? Arrays.stream(subscriptionsResponse).collect(Collectors.toList()) 
+                : Collections.emptyList();
     }
 
     private Ticker getCryptoChanges(CryptocurrencySymbol symbol) {
@@ -68,6 +72,7 @@ public class MessageSender {
                 .retrieve()
                 .bodyToMono(Ticker.class)
                 .blockOptional();
+        log.info(ticker.toString());
         return ticker.orElse(null);
     }
 

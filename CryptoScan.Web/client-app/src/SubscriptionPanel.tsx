@@ -31,7 +31,8 @@ export default function SubscriptionPanel(props: SubscriptionPanelProps){
   let [updatedEndDate, setUpdatedEndDate] = useState<Date | null>(props.subscription.timeRange.endDate);
   let [updatedTrend, setUpdatedTrend] = useState<Trend>(props.subscription.trend);
   let newSubscription = {
-    userId: props.subscription.userId, 
+    userId: props.subscription.userId,
+    email: props.subscription.email,
     symbol: props.subscription.symbol, 
     timeRange: {startDate: updatedStartDate, endDate: updatedEndDate} as TimeRange,
     threshold: updatedThreshold,
