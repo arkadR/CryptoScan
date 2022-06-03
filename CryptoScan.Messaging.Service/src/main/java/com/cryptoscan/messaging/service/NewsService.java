@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,18 +19,25 @@ public class NewsService {
 
     private final WebClient webClient;
 
-    public List<News> getNewsForCurrency(String currency) {
+    public Map<String, List<News>> getNewsForCurrency(Set<String> currencies) {
         Optional<NewsResponse> newsResponse = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("auth_token", cryptopanicToken)
-                        .queryParam("currencies", currency)
+                        .queryParam("currencies", String.join(",", currencies))
                         .queryParam("kind", "news")
                         .build())
                 .retrieve()
                 .bodyToMono(NewsResponse.class)
                 .blockOptional();
-        return newsResponse.map(response -> response.getNews().stream().limit(5).collect(Collectors.toList()))
+        Map<String, List<News>> newsToSend = new HashMap<>();
+        List<News> news = newsResponse.map(response -> response.getNews().stream().collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
+        for (String currency : currencies) {
+            List<News> newsForCurrency = news.stream().filter(n -> n.getCurrencies().stream()
+                    .anyMatch(c -> currency.equals(c.getCode()))).limit(5).collect(Collectors.toList());
+            newsToSend.put(currency, newsForCurrency);
+        }
+        return newsToSend;
     }
 
 }

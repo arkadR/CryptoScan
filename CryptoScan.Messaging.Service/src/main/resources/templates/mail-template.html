@@ -5,11 +5,13 @@
     <title>The latest news</title>
   </head>
   <body>
-    <b th:text="${'The latest news on ' + currency + ' cryptocurrency'}"></b>
-    <ul>
-      <li th:each="news: ${news}">
-        <a th:href="${news.url}" th:text="${news.title}"></a>
-      </li>
-    </ul>
+    <div th:each="currencyNews: ${currencyNews}" >
+      <b th:text="${'The latest news on ' + currencyNews.currency + ' cryptocurrency'}"></b>
+      <ul>
+        <li th:each="news: ${currencyNews.news}">
+          <a th:href="${news.url}" th:text="${news.title}"></a>
+        </li>
+      </ul>
+    </div>
   </body>
 </html>
