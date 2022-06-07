@@ -74,6 +74,10 @@ services:
       - 8005:8080
     environment:
       - subscription_api_baseurl=http://subscriptions_api:80
+      - spring_rabbitmq_host=rabbit
+      - spring_rabbitmq_port=5672
+      - spring_rabbitmq_username=user
+      - spring_rabbitmq_password=password
 
   mongo:
     image: mongo
