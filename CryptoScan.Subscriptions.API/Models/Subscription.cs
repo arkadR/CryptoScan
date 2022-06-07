@@ -12,6 +12,8 @@ public record Subscription
   public string? SubscriptionId { get; init; }
 
   public string UserId { get; init; }
+  
+  public string Email { get; init; }
 
   public CryptocurrencySymbol Symbol { get; init; }
 

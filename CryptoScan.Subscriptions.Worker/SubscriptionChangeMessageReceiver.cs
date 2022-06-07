@@ -23,9 +23,9 @@ public class SubscriptionChangeMessageReceiver : BackgroundService
     _subscriptionService = subscriptionService;
     _logger = logger;
     _connection = connectionFactory.CreateConnection();
-    DeclareExchangeAndQueues();
-
     _channel = _connection.CreateModel();
+
+    DeclareExchangeAndQueues();
   }
 
   private void DeclareExchangeAndQueues()

@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConsole();
 
 var rabbitMqOptions = builder.Configuration.GetSection(RabbitMqOptions.SectionName).Get<RabbitMqOptions>()!;
+Console.WriteLine($"Rabbit: {rabbitMqOptions.HostName}:{rabbitMqOptions.Port}");
 builder.Services.AddSingleton<IConnectionFactory>(new ConnectionFactory
 {
     HostName = rabbitMqOptions.HostName, 
