@@ -24,7 +24,7 @@ public class SubscriptionService : ISubscriptionService
   public async Task<bool> Update(Subscription subscription)
   {
     var result = await _httpClient.PatchAsJsonAsync(
-      $"subscriptions?email={subscription.Email}&symbol={subscription.Symbol.Symbol}", 
+      $"subscriptions?userid={subscription.UserId}&symbol={subscription.Symbol.Symbol}", 
       subscription);
     var r = await result.Content.ReadAsStringAsync();
     return result.IsSuccessStatusCode;
@@ -33,7 +33,7 @@ public class SubscriptionService : ISubscriptionService
   public async Task<bool> Delete(Subscription subscription)
   {
     var result = await _httpClient.DeleteAsync(
-      $"subscriptions?email={subscription.Email}&symbol={subscription.Symbol.Symbol}");
+      $"subscriptions?userid={subscription.UserId}&symbol={subscription.Symbol.Symbol}");
     return result.IsSuccessStatusCode;
   }
 }
