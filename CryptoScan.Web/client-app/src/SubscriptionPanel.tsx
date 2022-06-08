@@ -111,8 +111,8 @@ export default function SubscriptionPanel(props: SubscriptionPanelProps){
       <TableCell>{props.subscription.symbol.baseAsset}</TableCell>
       <TableCell>{thresholdField}</TableCell>
       <TableCell>{percentageThresholdField}</TableCell>
-      <TableCell>{startDatePicker}</TableCell>
-      <TableCell>{endDatePicker}</TableCell>
+      {/* <TableCell>{startDatePicker}</TableCell> */}
+      {/* <TableCell>{endDatePicker}</TableCell> */}
       <TableCell>{trendPicker}</TableCell>
       {props.symbolMode
         ? <TableCell>
