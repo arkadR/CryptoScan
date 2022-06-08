@@ -35,7 +35,6 @@ public class MailService {
             mimeMessageHelper.setTo(emailMessage.getEmail());
             mimeMessageHelper.setSubject("The latest news on " + String.join(", ", emailMessage.getCurrencies()));
             mimeMessageHelper.setText(htmlBody, true);
-            mailSender.send(mimeMessage);
         };
         mailSender.send(preparator);
         log.info("Mail sent to " + emailMessage.getEmail());
